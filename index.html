@@ -19,9 +19,27 @@
   </head>
   <body>
     <div id = "myMap"></div>
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
         <div class="col-md-6">
+
+          <form class="form-inline" role="form">
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">Find</div>
+                <input type="search" class="form-control" id="explore-venues" placeholder="Popular Places">
+              </div>             
+            </div>
+
+            <div class="form-group">
+              <div class="input-group">
+                <div class="input-group-addon">Near</div>
+                <input type="search" class="form-control" id="neighborhood-location" placeholder="Location">
+              </div>             
+            </div>
+
+            <button type="button" class="btn btn-default btn-md"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+          </form>
 
           <div id="search-venues" class="search-box">                 
           </div>
@@ -30,7 +48,7 @@
 
             <div class="venues-listing">
             </div>           
-                 
+
           </div>
 
         </div>
