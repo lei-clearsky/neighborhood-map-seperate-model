@@ -7,7 +7,7 @@
     font-family: 'Lato', Calibri, Arial, sans-serif;
 }
 
-.form-inline{
+.container-fluid{
   margin-top:20px;
 }
 .form-control,
@@ -17,7 +17,6 @@
 }
 
 .form-control{
-  border-left: none;
   -webkit-box-shadow: none; 
   box-shadow: none; 
 }
