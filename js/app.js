@@ -23,13 +23,14 @@ function MapViewModel() {
 	function initializeMap() {
 		mapOptions = {
 			center: { lat: -34.397, lng: 150.644},
-			zoom: 8,
+			zoom: 11,
 			disableDefaultUI: true
 		};
-		map = new google.maps.Map(document.getElementById('#map-canvas'), mapOptions);
+		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
 	};
 
-	initializeMap();
+	google.maps.event.addDomListener(window, "load", initializeMap);
 };
 
 // initialize the MapViewModel binding
