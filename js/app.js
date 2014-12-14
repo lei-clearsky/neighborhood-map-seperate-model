@@ -27,10 +27,15 @@ function MapViewModel() {
 			disableDefaultUI: true
 		};
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
+		$('#map-canvas').height($(window).height());
 	};
 
 	google.maps.event.addDomListener(window, "load", initializeMap);
+
+	window.addEventListener('resize', function(e) {
+    	// map.fitBounds(mapBounds);
+    	$('#map-canvas').height($(window).height());
+  	});
 };
 
 // initialize the MapViewModel binding
