@@ -60,7 +60,8 @@ function MapViewModel() {
     	var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
-  		var query = '&query=' + self.exploreKeyword;
+  		var query = '&query=' + self.exploreKeyword();
+  		console.log(self.exploreKeyword());
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815' + neighborhoodLL + query;
 
   		$.getJSON(foursquareURL, function(data) {
