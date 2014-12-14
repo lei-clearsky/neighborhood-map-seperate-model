@@ -22,10 +22,11 @@ function MapViewModel() {
 	// function that initializes the map
 	function initializeMap() {
 		mapOptions = {
-			disableDefaultUI: true,
-			zoom: 15
+			center: { lat: -34.397, lng: 150.644},
+			zoom: 8,
+			disableDefaultUI: true
 		};
-		map = new google.maps.Map(document.querySelector('#myMap'), mapOptions);
+		map = new google.maps.Map(document.getElementById('#map-canvas'), mapOptions);
 	};
 
 	initializeMap();
