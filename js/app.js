@@ -3,7 +3,7 @@ function MapViewModel() {
 	var self = this;
 	var map; 
 	var mapOptions;
-	var venuesOnMap = [];
+	var venueMarkers = [];
 	var VenuesOnList = [];
 	var venueLat;
 	var venueLon;
@@ -11,18 +11,111 @@ function MapViewModel() {
 	var bounds = window.mapBounds;
 	var service;
 	var marker;
-	var infoWinder;
+	var infoWindow;
 	var defaultExploreKeyword = 'bestnearby';
 	var defaultNeighborhood = 'new york';
+	// var neighborhood;
 
 	self.exploreKeyword = ko.observable('');
 	self.neighborhood = ko.observable('');
 	self.topPicks = ko.observableArray('');
 
+	// update venues on the list display
+	self.displayVenuesList = ko.computed(function(){
+
+	});
+
+	//
+	self.computedNeighborhood = ko.computed(function() {
+		requestNeighborhood(self.neighborhood());
+	});
+
+	// set neighborhood marker on the map 
+	// get best nearby venues from foursquare API
+	function getNeighborhoodVenues(venueData) {
+		console.log('test 1');
+		venueLat = venueData.geometry.location.k;
+		venueLon = venueData.geometry.location.D;
+		venueName = venueData.name;
+
+		self.neighborhood = new google.maps.LatLng(venueLat, venueLon);
+		map.setCenter(self.neighborhood);
+
+		// marker
+		marker = new google.maps.Marker({
+      		map: map,
+      		position: venueData.geometry.location,
+      		title: venueName
+    	});
+    	venueMarkers.push(marker);
+
+    	infoWindow = new google.maps.InfoWindow({
+    		content: venueName
+    	});
+
+    	google.maps.event.addListener(marker, 'click', function() {
+    		infoWindow.open(map, marker);
+    	});
+    	// get nearby venues based on neighborhood
+    	var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
+  		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
+  		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
+  		var query = '&query=' + self.exploreKeyword;
+  		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815' + neighborhoodLL + query;
+
+  		$.getJSON(foursquareURL, function(data) {
+      		self.topPicks(data.response.groups[0].items);
+      		for (var i in self.topPicks()) {
+        		createMarkers(self.topPicks()[i].venue);
+      		}
+      		console.log('foursquare callback');
+      	});
+	};
+
+	function createMarkers(venue) {
+    	var lat = venue.location.lat;
+    	var lng = venue.location.lng;
+    	var name = venue.name;
+    	var category = venue.categories[0].name;
+    	var position = new google.maps.LatLng(lat, lng);
+    	var address = venue.location.formattedAddress;
+    	var contact = venue.contact.formattedPhone;
+    	var foursquareUrl = "https://foursquare.com/v/" + venue.id;
+    	var rating = venue.rating;
+    	var url = venue.url;
+    
+	    // marker of a popular place
+	    var marker = new google.maps.Marker({
+	      map: map,
+	      position: position,
+	      title: name
+	    });
+
+	    google.maps.event.addListener(marker, 'click', function() {
+	      infoWindow.setContent('name');
+	      infoWindow.open(map, this);
+	    });
+  	}
+
+	// callback method for neighborhood location
+	function neighborhoodVenuesCallback(results, status) {
+	    if (status == google.maps.places.PlacesServiceStatus.OK) {
+	      getNeighborhoodVenues(results[0])
+	    }
+	}
+
+	function requestNeighborhood(neighborhood) {
+	    var request = {
+	      query: neighborhood
+	    };
+	    service = new google.maps.places.PlacesService(map);
+	    service.textSearch(request, neighborhoodVenuesCallback);
+	}
+
 	// function that initializes the map
 	function initializeMap() {
 		mapOptions = {
-			center: { lat: -34.397, lng: 150.644},
+			// center: { lat: -34.397, lng: 150.644},
 			zoom: 11,
 			disableDefaultUI: true
 		};
