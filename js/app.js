@@ -18,7 +18,13 @@ function MapViewModel() {
 
 	self.exploreKeyword = ko.observable('');
 	self.neighborhood = ko.observable('');
+	self.formattedAddress = ko.observable('');
 	self.topPicks = ko.observableArray('');
+
+	// display neighborhood info
+	self.displayNeighborhood = ko.computed(function() {
+
+	});
 
 	// update venues on the list display
 	self.displayVenuesList = ko.computed(function(){
@@ -33,19 +39,27 @@ function MapViewModel() {
 	// set neighborhood marker on the map 
 	// get best nearby venues from foursquare API
 	function getNeighborhoodVenues(venueData) {
-		console.log('test 1');
 		venueLat = venueData.geometry.location.k;
 		venueLon = venueData.geometry.location.D;
 		venueName = venueData.name;
-
+		var formattedVenueAddress = venueData.formatted_address; 
+		self.formattedAddress(formattedVenueAddress);
 		self.neighborhood = new google.maps.LatLng(venueLat, venueLon);
 		map.setCenter(self.neighborhood);
+
+		var blackStar = {
+		    path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
+		    fillColor: 'black',
+		    fillOpacity: 1,
+		    scale: 0.2
+		};
 
 		// marker
 		marker = new google.maps.Marker({
       		map: map,
       		position: venueData.geometry.location,
-      		title: venueName
+      		title: venueName,
+      		icon: blackStar
     	});
     	venueMarkers.push(marker);
 
@@ -61,7 +75,6 @@ function MapViewModel() {
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
   		var query = '&query=' + self.exploreKeyword();
-  		console.log(self.exploreKeyword());
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815' + neighborhoodLL + query;
 
   		$.getJSON(foursquareURL, function(data) {
@@ -69,7 +82,6 @@ function MapViewModel() {
       		for (var i in self.topPicks()) {
         		createMarkers(self.topPicks()[i].venue);
       		}
-      		console.log('foursquare callback');
       	});
 	};
 
@@ -86,15 +98,14 @@ function MapViewModel() {
     	var url = venue.url;
     
 	    // marker of a popular place
-	    var marker = new google.maps.Marker({
+	    var venueMarker = new google.maps.Marker({
 	      map: map,
 	      position: position,
 	      title: name
 	    });
 
-	    google.maps.event.addListener(marker, 'click', function() {
-	      infoWindow.setContent('name');
-	      infoWindow.open(map, this);
+	    google.maps.event.addListener(venueMarker, 'click', function() {
+	      infoWindow.open(map, venueMarker);
 	    });
   	}
 
@@ -117,7 +128,7 @@ function MapViewModel() {
 	function initializeMap() {
 		mapOptions = {
 			// center: { lat: -34.397, lng: 150.644},
-			zoom: 11,
+			zoom: 15,
 			disableDefaultUI: true
 		};
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
