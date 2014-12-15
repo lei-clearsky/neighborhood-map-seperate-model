@@ -15,12 +15,15 @@ function MapViewModel() {
 	var defaultExploreKeyword = 'bestnearby';
 	var defaultNeighborhood = 'new york';
 	var newNeighborhood;
+	var currentLat;
+	var currentLon;
 	// var neighborhood;
 
 	self.exploreKeyword = ko.observable('');
 	self.neighborhood = ko.observable('');
 	self.formattedAddress = ko.observable('');
 	self.topPicks = ko.observableArray('');
+	self.forecasts = ko.observableArray('');
 
 	// display neighborhood info
 	self.displayNeighborhood = ko.computed(function() {
@@ -49,12 +52,33 @@ function MapViewModel() {
 		}	
 	};
 
+	self.exploreKeyword.subscribe(self.computedNeighborhood);
 	self.neighborhood.subscribe(self.computedNeighborhood);
+	// test weather
+	// self.neighborhood.subscribe(self.getWeather);
+/*
+	var getWeather = function() {
+		var forecastBaseURL = 'https://api.forecast.io/forecast/';
+		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
+		var formattedLL = '/'+ currentLat + ',' + currentLon;
+		var forecastURL = forecastBaseURL + forecastAPIkey + formattedLL;
 
+		$.getJSON(forecastURL, function(data) {
+			self.forecasts(data);
+		});
+	}
+*/
 	function removeVenueMarkers() {
 		console.log('remove markers');
 	    for (var i = 0; i < venueMarkers.length; i++) {
-    		venueMarkers[i].setMap(null);
+    		venueMarkers[i].marker.setMap(null);
+    		venueMarkers[i].marker = null;
+  		}
+
+  		// fastest solution to clear an array
+  		// http://stackoverflow.com/questions/1232040/empty-an-array-in-javascript
+  		while(venueMarkers.length > 0){
+  			venueMarkers.pop();
   		}
 	}
 
@@ -63,6 +87,8 @@ function MapViewModel() {
 	function getNeighborhoodVenues(venueData) {
 		venueLat = venueData.geometry.location.k;
 		venueLon = venueData.geometry.location.D;
+		currentLat = venueLat;
+		currentLon = venueLon;
 		venueName = venueData.name;
 		var formattedVenueAddress = venueData.formatted_address; 
 		self.formattedAddress(formattedVenueAddress);
@@ -93,6 +119,7 @@ function MapViewModel() {
     		infoWindow.open(map, marker);
     	});
     	// get nearby venues based on neighborhood
+    	
     	var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
@@ -100,12 +127,36 @@ function MapViewModel() {
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815' + neighborhoodLL + query;
 
   		$.getJSON(foursquareURL, function(data) {
-      		self.topPicks(data.response.groups[0].items);      		
+      		self.topPicks(data.response.groups[0].items);
+      		// imageJSON: https://api.foursquare.com/v2/venues/4bcf9774a8b3a5939497625f/photos?client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC&v=20140806
+      		// image: https://irs3.4sqi.net/img/general/width100/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg
+      		/*
+      		for(var i in self.topPicks()){
+      			var baseImgURL = 'https://api.foursquare.com/v2/venues/';
+      			var venueID = self.topPicks()[i].venue.id;
+      			var venueImgURL = baseImgURL + venueID + '/photos?' + foursquareID + '&v=20130815';
+      			self.topPicks()[i].displayPhoto = 
+      		}
+      		*/
       		for (var i in self.topPicks()) {
         		createMarkers(self.topPicks()[i].venue);
       		}
       		
       	});
+		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
+      	var forecastBaseURL = 'https://api.forecast.io/forecast/';
+		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
+		var formattedLL = '/'+ currentLat + ',' + currentLon;
+		var forecastURL = forecastBaseURL + forecastAPIkey + formattedLL;
+
+		$.ajax({
+			url: forecastURL,
+			dataType: 'jsonp',
+			success: function(data){
+				self.forecasts(JSON.stringify(data));
+				console.log(self.forecasts());
+			}
+		});
 	};
 
 	function createMarkers(venue) {
@@ -120,8 +171,7 @@ function MapViewModel() {
     	var foursquareUrl = "https://foursquare.com/v/" + venue.id;
     	var rating = venue.rating;
     	var url = venue.url;
-    	console.log(name);
-    	console.log(lat);
+
     	// console.log(photos);
 	    // marker of a popular place
 	    var venueMarker = new google.maps.Marker({
@@ -140,7 +190,7 @@ function MapViewModel() {
 	// callback method for neighborhood location
 	function neighborhoodVenuesCallback(results, status) {
 	    if (status == google.maps.places.PlacesServiceStatus.OK) {
-	      getNeighborhoodVenues(results[0])
+	      getNeighborhoodVenues(results[0]);
 	    }
 	}
 
@@ -169,6 +219,21 @@ function MapViewModel() {
     	// map.fitBounds(mapBounds);
     	$('#map-canvas').height($(window).height());
   	});
+
+  	// skycons
+  	var skycons = function() {
+  		var icons = new Skycons(),
+          	list  = [
+            "clear-day", "clear-night", "partly-cloudy-day",
+            "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
+            "fog"
+          	],
+          	i;
+      	for(i = list.length; i--; )
+        	icons.set(list[i], list[i]);
+      	icons.play();
+  	}
+  	skycons();
 };
 
 // initialize the MapViewModel binding

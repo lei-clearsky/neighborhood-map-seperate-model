@@ -12,6 +12,7 @@
     <!--JS-->
     <script src="js/jQuery.js"></script>
     <!--Google Maps-->
+    <script src="js/skycons.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places"></script> 
     <script src="js/knockout-3.2.0.js"></script>
     <script src="js/app.js"></script>
@@ -42,7 +43,7 @@
 
           <div id="nh-info" class="nh-info-box">
             <div data-bind="text: formattedAddress" class="nj-formatted-address"></div>  
-            <div class="direction-box"><h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1></div>               
+            <div class="direction-box"><!--<h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1>--><canvas id="rain" width="50" height="50"></canvas></div>               
           </div>
 
           <div id="venues-listing" class="venues-listing-box"> 
@@ -50,7 +51,9 @@
             <div class="venue-listing-item">
               <p data-bind="text: venue.name"></p>
               <span data-bind="text: venue.rating" class="badge"></span>
+              <p data-bind="text: venue.location.formattedAddress"></p>
               <p data-bind="text: venue.url"></p>
+              <img src="" />
             </div>  
             <!-- /ko -->         
 
