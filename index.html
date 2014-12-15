@@ -46,9 +46,13 @@
           </div>
 
           <div id="venues-listing" class="venues-listing-box"> 
-
-            <div class="venue-item">
-            </div>           
+            <!-- ko foreach: topPicks() -->
+            <div class="venue-listing-item">
+              <p data-bind="text: venue.name"></p>
+              <span data-bind="text: venue.rating" class="badge"></span>
+              <p data-bind="text: venue.url"></p>
+            </div>  
+            <!-- /ko -->         
 
           </div>
 

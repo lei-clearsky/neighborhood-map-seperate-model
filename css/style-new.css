@@ -24,6 +24,7 @@
   box-shadow: none; 
 }
 .input-group-addon{
+  font-weight: 300;
   color:#fff;
   background-color: #09c;
   border: none;
@@ -61,12 +62,15 @@
   top:20px;
 }
 .venues-listing-box{
+  overflow:auto;
   margin-top:10px;
   width:460px;
   height: 300px;
   background: #f4f4f4;
 }
-
+.venues-listing-box .venue-listing-item{
+  padding:10px;
+}
 /* Custom, iPhone Retina */ 
 @media only screen and (min-width : 320px) {
 
