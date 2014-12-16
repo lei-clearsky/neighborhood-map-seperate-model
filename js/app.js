@@ -23,7 +23,15 @@ function MapViewModel() {
 	self.neighborhood = ko.observable('');
 	self.formattedAddress = ko.observable('');
 	self.topPicks = ko.observableArray('');
-	self.forecasts = ko.observableArray('');
+	self.dailyForecasts = ko.observableArray('');
+	self.currentlyForecasts = ko.observable('');
+
+	self.displaySkyicon = ko.computed(function() {
+		var currentlyIcon = self.currentlyForecasts().icon;
+
+		var skyIconCanvas = ko.observable('');
+		skyIconCanvas = '<canvas id="clear-night" width="50" height="50"></canvas>';
+	});
 
 	// display neighborhood info
 	self.displayNeighborhood = ko.computed(function() {
@@ -143,6 +151,7 @@ function MapViewModel() {
       		}
       		
       	});
+      	console.log(self.topPicks());
 		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
       	var forecastBaseURL = 'https://api.forecast.io/forecast/';
 		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
@@ -153,10 +162,14 @@ function MapViewModel() {
 			url: forecastURL,
 			dataType: 'jsonp',
 			success: function(data){
-				self.forecasts(JSON.stringify(data));
-				console.log(self.forecasts());
+				// var JSONdata = JSON.parse(JSON.stringify(data));
+				self.dailyForecasts(data.daily.data);
+				self.currentlyForecasts(data.currently);
+				console.log(self.dailyForecasts());
+				console.log(self.currentlyForecasts());
 			}
 		});
+
 	};
 
 	function createMarkers(venue) {

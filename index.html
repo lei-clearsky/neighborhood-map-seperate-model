@@ -43,7 +43,20 @@
 
           <div id="nh-info" class="nh-info-box">
             <div data-bind="text: formattedAddress" class="nj-formatted-address"></div>  
-            <div class="direction-box"><!--<h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1>--><canvas id="rain" width="50" height="50"></canvas></div>               
+            <div class="direction-box"><!--<h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1>-->
+              <div data-bind="text: currentlyForecasts().temperature" class="currentlyTemp">            
+              </div>
+
+              <canvas data-bind="attr: {id: currentlyForecasts().icon}" width="50" height="50"></canvas>
+              <canvas id="clear-night" width="50" height="50"></canvas>
+            </div>               
+          </div>
+
+          <div id="forecast-listing" class="forecast-listing-box">
+
+            <div class="forecast-listing-item">
+
+            </div>
           </div>
 
           <div id="venues-listing" class="venues-listing-box"> 
