@@ -17,6 +17,8 @@ function MapViewModel() {
 	var newNeighborhood;
 	var currentLat;
 	var currentLon;
+
+	
 	// var neighborhood;
 
 	self.exploreKeyword = ko.observable('');
@@ -25,12 +27,37 @@ function MapViewModel() {
 	self.topPicks = ko.observableArray('');
 	self.dailyForecasts = ko.observableArray('');
 	self.currentlyForecasts = ko.observable('');
-
+	self.currentlySkyicon = ko.observable('');
+/*
 	self.displaySkyicon = ko.computed(function() {
 		var currentlyIcon = self.currentlyForecasts().icon;
 
 		var skyIconCanvas = ko.observable('');
 		skyIconCanvas = '<canvas id="clear-night" width="50" height="50"></canvas>';
+	});
+*/
+
+  	// skycons
+  	self.skycons = function() {
+  		var icons = new Skycons(),
+          	list  = [
+            "clear-day", "clear-night", "partly-cloudy-day",
+            "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
+            "fog"
+          	];
+      	for(var i = list.length; i--; )
+        	icons.set(list[i], list[i]);
+      	icons.play();
+  	}
+  	// skycons();
+  	ko.bindingHandlers.afterHtmlRender = {
+    	update: function(el, va, ab){
+        	ab().html && va()(ab().html);
+    	}
+	}
+	self.displaySkyicon = ko.computed(function() {
+
+		self.currentlySkyicon();
 	});
 
 	// display neighborhood info
@@ -165,6 +192,7 @@ function MapViewModel() {
 				// var JSONdata = JSON.parse(JSON.stringify(data));
 				self.dailyForecasts(data.daily.data);
 				self.currentlyForecasts(data.currently);
+				self.currentlySkyicon(data.currently.icon);
 				console.log(self.dailyForecasts());
 				console.log(self.currentlyForecasts());
 			}
@@ -233,20 +261,7 @@ function MapViewModel() {
     	$('#map-canvas').height($(window).height());
   	});
 
-  	// skycons
-  	var skycons = function() {
-  		var icons = new Skycons(),
-          	list  = [
-            "clear-day", "clear-night", "partly-cloudy-day",
-            "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
-            "fog"
-          	],
-          	i;
-      	for(i = list.length; i--; )
-        	icons.set(list[i], list[i]);
-      	icons.play();
-  	}
-  	skycons();
+
 };
 
 // initialize the MapViewModel binding
