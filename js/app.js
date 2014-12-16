@@ -50,6 +50,7 @@ function MapViewModel() {
       	icons.play();
   	}
   	// skycons();
+  	// http://stackoverflow.com/questions/16250594/afterrender-for-html-binding
   	ko.bindingHandlers.afterHtmlRender = {
     	update: function(el, va, ab){
         	ab().html && va()(ab().html);
