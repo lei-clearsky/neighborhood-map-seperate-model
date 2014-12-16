@@ -21,6 +21,7 @@ function MapViewModel() {
 	
 	// var neighborhood;
 
+
 	self.exploreKeyword = ko.observable('');
 	self.neighborhood = ko.observable('');
 	self.formattedAddress = ko.observable('');
@@ -36,7 +37,6 @@ function MapViewModel() {
 		skyIconCanvas = '<canvas id="clear-night" width="50" height="50"></canvas>';
 	});
 */
-
   	// skycons
   	self.skycons = function() {
   		var icons = new Skycons(),
@@ -50,17 +50,15 @@ function MapViewModel() {
       	icons.play();
   	}
   	// skycons();
+
   	// http://stackoverflow.com/questions/16250594/afterrender-for-html-binding
+  	
   	ko.bindingHandlers.afterHtmlRender = {
     	update: function(el, va, ab){
         	ab().html && va()(ab().html);
     	}
 	}
-	self.displaySkyicon = ko.computed(function() {
-
-		self.currentlySkyicon();
-	});
-
+	
 	// display neighborhood info
 	self.displayNeighborhood = ko.computed(function() {
 
@@ -268,4 +266,5 @@ function MapViewModel() {
 // initialize the MapViewModel binding
 $(function() {
   ko.applyBindings(new MapViewModel());
+
 });

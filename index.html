@@ -51,10 +51,13 @@
             </div>               
           </div>
 
-          <div id="forecast-listing" class="forecast-listing-box">
-
+          <div data-bind="foreach: dailyForecasts()" id="forecast-listing" class="forecast-listing-box">
             <div class="forecast-listing-item">
-
+              <p data-bind="text: time"></p>
+              <p data-bind="text: summary"></p>
+              <p data-bind="text: temperatureMin"></p>
+              <p data-bind="text: temperatureMax"></p>
+              <canvas data-bind="attr: {id: icon}, afterHtmlRender:$parent.skycons()" width="50" height="50"></canvas>
             </div>
           </div>
 

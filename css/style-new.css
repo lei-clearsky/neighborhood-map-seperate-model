@@ -61,6 +61,7 @@
   z-index:100;
   top:20px;
 }
+.forecast-listing-box,
 .venues-listing-box{
   overflow:auto;
   margin-top:10px;
@@ -68,26 +69,33 @@
   height: 300px;
   background: #fff;
 }
+.forecast-listing-box .forecast-listing-item,
 .venues-listing-box .venue-listing-item{
   margin: 10px;
   border-bottom: 1px solid #f4f4f4;
 }
-
+.forecast-listing-box::-webkit-scrollbar,
 .venues-listing-box::-webkit-scrollbar {
   width: 10px;
   overflow: visible;
 }
-
+.forecast-listing-box::-webkit-scrollbar-thumb,
 .venues-listing-box::-webkit-scrollbar-thumb {
   background-color: #09c;
   min-height: 28px;
   box-shadow: inset 1px 1px 0 rgba(0,0,0,.1),inset 0 -1px 0 rgba(0,0,0,.07);
 }
-
+.forecast-listing-box::-webkit-scrollbar-thumb:hover,
 .venues-listing-box::-webkit-scrollbar-thumb:hover {
   background-color: #09c;
 }
 
+.forecast-listing-box{
+
+}
+.forecast-listing-box .forecast-listing-item{
+
+}
 
 .badge{
   background-color: #FF5A5E;
