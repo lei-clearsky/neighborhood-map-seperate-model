@@ -40,14 +40,16 @@ function MapViewModel() {
   	// skycons
   	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
   	self.computedDailyForecasts = ko.computed(function(){
-  		var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  		//var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  		//var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   		var newDailyForecasts = self.dailyForecasts();
   		console.log(newDailyForecasts);
   		for (var i in newDailyForecasts) {
   			var date = new Date(newDailyForecasts[i].time * 1000);
-  			var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
+  			//var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
+  			var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
+
   			newDailyForecasts[i]['formatedTime'] = formatedTime;
   		}
   		console.log(newDailyForecasts);
@@ -290,6 +292,18 @@ function MapViewModel() {
     	// map.fitBounds(mapBounds);
     	$('#map-canvas').height($(window).height());
   	});
+
+	// http://stackoverflow.com/questions/4822852/how-to-get-the-day-of-week-and-the-month-of-the-year
+  	var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    Date.prototype.getMonthName = function() {
+        return months[ this.getMonth() ];
+    };
+    Date.prototype.getDayName = function() {
+        return days[ this.getDay() ];
+    };
 
 
 };
