@@ -38,6 +38,23 @@ function MapViewModel() {
 	});
 */
   	// skycons
+  	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
+  	self.computedDailyForecasts = ko.computed(function(){
+  		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  		var newDailyForecasts = [];
+  		for (var i = 0; i < self.dailyForecasts.length; i++) {
+  			var date = new Date(self.dailyForecasts[i].time * 1000);
+  			var formatedTime = months[date.getMonth()] + ' ' + date.getDate();
+  			newDailyForecasts[i] = {
+
+  			}
+  		}
+  		return newDailyForecasts;
+  	});
+
+
+/*
   	self.skycons = function() {
   		var icons = new Skycons(),
           	list  = [
@@ -48,8 +65,27 @@ function MapViewModel() {
       	for(var i = list.length; i--; )
         	icons.set(list[i], list[i]);
       	icons.play();
+      	console.log(icons);
   	}
   	// skycons();
+*/
+
+  	self.skycons = function() {
+  		var icons = new Skycons(),
+          	list  = [
+            "clear-day", "clear-night", "partly-cloudy-day",
+            "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
+            "fog"
+          	];
+      	for(var i = list.length; i--; ){
+      		var weatherType = list[i],
+        	elements = document.getElementsByClassName( weatherType );
+		    for (e = elements.length; e--;){
+		        icons.set( elements[e], weatherType );
+		    }
+      	}
+      	icons.play();
+  	}
 
   	// http://stackoverflow.com/questions/16250594/afterrender-for-html-binding
   	
@@ -80,7 +116,6 @@ function MapViewModel() {
 
 	self.computedNeighborhood = function() {
 		if (self.neighborhood() != '') {
-			console.log('test1');
 			removeVenueMarkers();
 			requestNeighborhood(self.neighborhood());
 		}	
@@ -103,7 +138,6 @@ function MapViewModel() {
 	}
 */
 	function removeVenueMarkers() {
-		console.log('remove markers');
 	    for (var i = 0; i < venueMarkers.length; i++) {
     		venueMarkers[i].marker.setMap(null);
     		venueMarkers[i].marker = null;
@@ -177,7 +211,6 @@ function MapViewModel() {
       		}
       		
       	});
-      	console.log(self.topPicks());
 		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
       	var forecastBaseURL = 'https://api.forecast.io/forecast/';
 		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
@@ -192,8 +225,6 @@ function MapViewModel() {
 				self.dailyForecasts(data.daily.data);
 				self.currentlyForecasts(data.currently);
 				self.currentlySkyicon(data.currently.icon);
-				console.log(self.dailyForecasts());
-				console.log(self.currentlyForecasts());
 			}
 		});
 
