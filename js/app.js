@@ -40,13 +40,14 @@ function MapViewModel() {
   	// skycons
   	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
   	self.computedDailyForecasts = ko.computed(function(){
+  		var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   		var newDailyForecasts = self.dailyForecasts();
   		console.log(newDailyForecasts);
   		for (var i in newDailyForecasts) {
   			var date = new Date(newDailyForecasts[i].time * 1000);
-  			var formatedTime = months[date.getMonth()] + ' ' + date.getDate();
+  			var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
   			newDailyForecasts[i]['formatedTime'] = formatedTime;
   		}
   		console.log(newDailyForecasts);
