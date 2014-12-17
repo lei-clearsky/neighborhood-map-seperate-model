@@ -39,6 +39,7 @@ function MapViewModel() {
 */
   	// skycons
   	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
+  	// http://stackoverflow.com/questions/24572100/skycons-cant-display-the-same-icon-twice
   	self.computedDailyForecasts = ko.computed(function(){
   		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
