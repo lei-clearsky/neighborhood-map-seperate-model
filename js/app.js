@@ -29,6 +29,7 @@ function MapViewModel() {
 	self.dailyForecasts = ko.observableArray('');
 	self.currentlyForecasts = ko.observable('');
 	self.currentlySkyicon = ko.observable('');
+	var venuesPhotos = [];
 /*
 	self.displaySkyicon = ko.computed(function() {
 		var currentlyIcon = self.currentlyForecasts().icon;
@@ -44,7 +45,6 @@ function MapViewModel() {
   		//var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   		var newDailyForecasts = self.dailyForecasts();
-  		console.log(newDailyForecasts);
   		for (var i in newDailyForecasts) {
   			var date = new Date(newDailyForecasts[i].time * 1000);
   			//var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
@@ -52,7 +52,6 @@ function MapViewModel() {
 
   			newDailyForecasts[i]['formatedTime'] = formatedTime;
   		}
-  		console.log(newDailyForecasts);
 
   		return newDailyForecasts;
   	});
@@ -189,29 +188,66 @@ function MapViewModel() {
     	google.maps.event.addListener(marker, 'click', function() {
     		infoWindow.open(map, marker);
     	});
-    	// get nearby venues based on neighborhood
-    	
+    	// get nearby venues based on neighborhood    	
     	var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
   		var query = '&query=' + self.exploreKeyword();
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815' + neighborhoodLL + query;
 
-  		$.getJSON(foursquareURL, function(data) {
-      		self.topPicks(data.response.groups[0].items);
-      		// imageJSON: https://api.foursquare.com/v2/venues/4bcf9774a8b3a5939497625f/photos?client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC&v=20140806
-      		// image: https://irs3.4sqi.net/img/general/width100/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg
-      		/*
-      		for(var i in self.topPicks()){
-      			var baseImgURL = 'https://api.foursquare.com/v2/venues/';
-      			var venueID = self.topPicks()[i].venue.id;
-      			var venueImgURL = baseImgURL + venueID + '/photos?' + foursquareID + '&v=20130815';
-      			self.topPicks()[i].displayPhoto = 
-      		}
-      		*/
+  		$.ajax({
+  			url: foursquareURL, 
+  			dataType:'jsonp',
+  			success: function(data) {
+  				venuesPhotos.length = 0;
+      			self.topPicks(data.response.groups[0].items);
+	      		// imageJSON: https://api.foursquare.com/v2/venues/4bcf9774a8b3a5939497625f/photos?client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC&v=20140806
+	      		// image: https://irs3.4sqi.net/img/general/width100/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg
+	      		// create venues photos
+	      		for(var i in self.topPicks()){
+	      			var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
+	      			var venueID = self.topPicks()[i].venue.id;
+	      			var venueName = self.topPicks()[i].venue.name;
+	      			console.log(venueID + ': ' + venueName);
+	      			var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
+	      			var baseImgURL = 'https://irs3.4sqi.net/img/general/';
+	      			var tempVenuePhotos = [];
+	      			$.ajax({
+	      				url: venueImgsURL,
+	      				dataType: 'jsonp',
+	      				success: function(data){
+	      					var imgItems = data.response.photos.items;
+	      					console.log(imgItems.length);
+	      					// console.log(imgItems);
+	      					for (var j in imgItems){
+	      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
+	      						var venueImgObj = {
+	      							url: venueImgURL,
+	      							title: venueName
+	      						};
+	      						
+	      						tempVenuePhotos.push(venueImgObj);
+
+
+	      					}
+	      					// console.log(tempVenuePhotos[0].url);
+	      					venuesPhotos.push(tempVenuePhotos);
+	      					// console.log(venuesPhotos);
+	      				}
+	      			});
+	      			
+	      			var venueIDphotos = '#' + venueID;
+	      			$(venueIDphotos).click(function( e ) {
+	      				e.preventDefault();
+	      				$.swipebox(venuesPhotos[i]);
+	      			});
+	      		}
+      		
+      		// create markers
       		for (var i in self.topPicks()) {
         		createMarkers(self.topPicks()[i].venue);
-      		}     		
+      		}
+      	}	     		
       	});
 		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
       	var forecastBaseURL = 'https://api.forecast.io/forecast/';
