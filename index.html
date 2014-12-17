@@ -53,9 +53,9 @@
             </div>               
           </div>
 
-          <div data-bind="foreach: dailyForecasts()" id="forecast-listing" class="forecast-listing-box">
+          <div data-bind="foreach: computedDailyForecasts()" id="forecast-listing" class="forecast-listing-box">
             <div class="forecast-listing-item">
-              <p data-bind="text: time"></p>
+              <p data-bind="text: formatedTime"></p>
               <p data-bind="text: summary"></p>
               <p><span data-bind="text: temperatureMin"></span><span>&deg;</span> - <span data-bind="text: temperatureMax"></span><span>&deg;</span></p>
               <!--

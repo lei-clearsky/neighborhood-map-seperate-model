@@ -39,21 +39,20 @@ function MapViewModel() {
 */
   	// skycons
   	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
-  	// http://stackoverflow.com/questions/24572100/skycons-cant-display-the-same-icon-twice
   	self.computedDailyForecasts = ko.computed(function(){
   		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  		var newDailyForecasts = [];
-  		for (var i = 0; i < self.dailyForecasts.length; i++) {
-  			var date = new Date(self.dailyForecasts[i].time * 1000);
+  		var newDailyForecasts = self.dailyForecasts();
+  		console.log(newDailyForecasts);
+  		for (var i in newDailyForecasts) {
+  			var date = new Date(newDailyForecasts[i].time * 1000);
   			var formatedTime = months[date.getMonth()] + ' ' + date.getDate();
-  			newDailyForecasts[i] = {
-
-  			}
+  			newDailyForecasts[i]['formatedTime'] = formatedTime;
   		}
+  		console.log(newDailyForecasts);
+
   		return newDailyForecasts;
   	});
-
 
 /*
   	self.skycons = function() {
@@ -70,7 +69,7 @@ function MapViewModel() {
   	}
   	// skycons();
 */
-
+	// http://stackoverflow.com/questions/24572100/skycons-cant-display-the-same-icon-twice
   	self.skycons = function() {
   		var icons = new Skycons(),
           	list  = [
@@ -209,8 +208,7 @@ function MapViewModel() {
       		*/
       		for (var i in self.topPicks()) {
         		createMarkers(self.topPicks()[i].venue);
-      		}
-      		
+      		}     		
       	});
 		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
       	var forecastBaseURL = 'https://api.forecast.io/forecast/';
