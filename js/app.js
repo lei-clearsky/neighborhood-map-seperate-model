@@ -333,6 +333,7 @@ function MapViewModel() {
 	      		})(i);
 
 	      		var venueIDphotos = '#' + venueIDlist[i];
+	      		// http://stackoverflow.com/questions/48239/getting-the-id-of-the-element-that-fired-an-event-using-jquery
       			$(venueIDphotos).click(function( e ) {
       				e.preventDefault();
       				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
