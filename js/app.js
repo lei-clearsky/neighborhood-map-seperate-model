@@ -56,6 +56,19 @@ function MapViewModel() {
   		return newDailyForecasts;
   	});
 
+  	self.computedTopPicks = ko.computed(function(){
+  		var newTopPicks = self.topPicks();
+  		for (var i in newTopPicks) {
+
+  			var photoPrefix = 'https://irs0.4sqi.net/img/general/';
+  			var photoSuffix = newTopPicks[i].venue.featuredPhotos.items[0].suffix;
+  			var photoFullURL = photoPrefix + 'width100' + photoSuffix;			
+
+  			newTopPicks[i]['photoFullURL'] = photoFullURL;
+  		}
+  		return newTopPicks;
+  	});
+
 /*
   	self.skycons = function() {
   		var icons = new Skycons(),
@@ -193,7 +206,7 @@ function MapViewModel() {
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
   		var query = '&query=' + self.exploreKeyword();
-  		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815' + neighborhoodLL + query;
+  		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
 
   		$.ajax({
   			url: foursquareURL, 
@@ -208,8 +221,9 @@ function MapViewModel() {
 	      			var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
 	      			var venueID = self.topPicks()[i].venue.id;
 	      			var venueName = self.topPicks()[i].venue.name;
-	      			console.log(venueID + ': ' + venueName);
+	      			//console.log(venueID + ': ' + venueName);
 	      			var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
+	      			console.log('ajax 1');
 	      			var baseImgURL = 'https://irs3.4sqi.net/img/general/';
 	      			var tempVenuePhotos = [];
 	      			$.ajax({
@@ -217,8 +231,7 @@ function MapViewModel() {
 	      				dataType: 'jsonp',
 	      				success: function(data){
 	      					var imgItems = data.response.photos.items;
-	      					console.log(imgItems.length);
-	      					// console.log(imgItems);
+	      					console.log('ajax 2');
 	      					for (var j in imgItems){
 	      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
 	      						var venueImgObj = {
@@ -239,7 +252,11 @@ function MapViewModel() {
 	      			var venueIDphotos = '#' + venueID;
 	      			$(venueIDphotos).click(function( e ) {
 	      				e.preventDefault();
-	      				$.swipebox(venuesPhotos[i]);
+	      				//$.swipebox(venuesPhotos[i]);
+	      				$.swipebox([{
+	      							url: 'https://irs3.4sqi.net/img/general/width800/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg',
+	      							title: 'test'
+	      						}]);
 	      			});
 	      		}
       		
