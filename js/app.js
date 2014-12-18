@@ -235,7 +235,7 @@ function MapViewModel() {
 	      					for (var j in imgItems){
 	      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
 	      						var venueImgObj = {
-	      							url: venueImgURL,
+	      							href: venueImgURL,
 	      							title: venueName
 	      						};
 	      						
@@ -252,11 +252,13 @@ function MapViewModel() {
 	      			var venueIDphotos = '#' + venueID;
 	      			$(venueIDphotos).click(function( e ) {
 	      				e.preventDefault();
-	      				//$.swipebox(venuesPhotos[i]);
+	      				$.swipebox(venuesPhotos[i]);
+	      				/*
 	      				$.swipebox([{
-	      							url: 'https://irs3.4sqi.net/img/general/width800/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg',
+	      							href: 'https://irs3.4sqi.net/img/general/width800/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg',
 	      							title: 'test'
 	      						}]);
+	      				*/
 	      			});
 	      		}
       		
