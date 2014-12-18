@@ -29,7 +29,9 @@ function MapViewModel() {
 	self.dailyForecasts = ko.observableArray('');
 	self.currentlyForecasts = ko.observable('');
 	self.currentlySkyicon = ko.observable('');
-	var venuesPhotos = [];
+	// var venuesPhotos = [];
+	var tempVenuePhotos = [];
+	self.photosAPIurl = ko.observableArray('');
 /*
 	self.displaySkyicon = ko.computed(function() {
 		var currentlyIcon = self.currentlyForecasts().icon;
@@ -207,60 +209,84 @@ function MapViewModel() {
   		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
   		var query = '&query=' + self.exploreKeyword();
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
-
   		$.ajax({
   			url: foursquareURL, 
   			dataType:'jsonp',
   			success: function(data) {
-  				venuesPhotos.length = 0;
+  				//venuesPhotos.length = 0;
       			self.topPicks(data.response.groups[0].items);
 	      		// imageJSON: https://api.foursquare.com/v2/venues/4bcf9774a8b3a5939497625f/photos?client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC&v=20140806
 	      		// image: https://irs3.4sqi.net/img/general/width100/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg
 	      		// create venues photos
+	      		var venueImgsURLlist = [];
+	      		var venueIDlist = [];
 	      		for(var i in self.topPicks()){
 	      			var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
 	      			var venueID = self.topPicks()[i].venue.id;
 	      			var venueName = self.topPicks()[i].venue.name;
 	      			//console.log(venueID + ': ' + venueName);
 	      			var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
-	      			console.log('ajax 1');
-	      			var baseImgURL = 'https://irs3.4sqi.net/img/general/';
-	      			var tempVenuePhotos = [];
+	      			venueImgsURLlist.push(venueImgsURL);
+	      			venueIDlist.push(venueID);
+
+	      			
+	      			// var baseImgURL = 'https://irs3.4sqi.net/img/general/';
+
+	      			// test nested photo ajax call
+	      		// http://stackoverflow.com/questions/17981631/jquery-ajax-inside-a-loop	
+	      		/*	
+	      		(function(i){
 	      			$.ajax({
 	      				url: venueImgsURL,
 	      				dataType: 'jsonp',
+	      				async: false,
 	      				success: function(data){
 	      					var imgItems = data.response.photos.items;
-	      					console.log('ajax 2');
 	      					for (var j in imgItems){
 	      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
 	      						var venueImgObj = {
 	      							href: venueImgURL,
 	      							title: venueName
 	      						};
-	      						
+	      						//console.log(i);
 	      						tempVenuePhotos.push(venueImgObj);
 
-
 	      					}
+	      					console.log(tempVenuePhotos);
 	      					// console.log(tempVenuePhotos[0].url);
-	      					venuesPhotos.push(tempVenuePhotos);
+	      					// venuesPhotos.push(tempVenuePhotos);
+	      					venuesPhotos[i] = tempVenuePhotos;
+	      					console.log(venuesPhotos[i]);
+	      					// tempVenuePhotos.length = 0;
 	      					// console.log(venuesPhotos);
+	      					console.log('nested i: ' +i);
 	      				}
 	      			});
+	      		})(i);
 	      			
 	      			var venueIDphotos = '#' + venueID;
 	      			$(venueIDphotos).click(function( e ) {
 	      				e.preventDefault();
 	      				$.swipebox(venuesPhotos[i]);
-	      				/*
-	      				$.swipebox([{
-	      							href: 'https://irs3.4sqi.net/img/general/width800/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg',
-	      							title: 'test'
-	      						}]);
-	      				*/
+
 	      			});
+	      		*/
 	      		}
+	      		console.log(venueImgsURLlist);
+	      		console.log(venueIDlist);
+	      		function get2DArray(size) {
+				    size = size > 0 ? size : 0;
+				    var arr = [];
+				    while(size--) {
+				        arr.push([]);
+				    }
+				    return arr;
+				}
+
+				var venuesPhotos = get2DArray(venueIDlist.length);
+				console.log(venuesPhotos);
+	      		setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
+
       		
       		// create markers
       		for (var i in self.topPicks()) {
@@ -268,6 +294,50 @@ function MapViewModel() {
       		}
       	}	     		
       	});
+
+		// test foursquare photos api
+		var setPhotosGroups = function (venuesPhotos, venueIDlist, venueImgsURLlist){
+			// venuesPhotos.length = venueIDlist.length;
+			var baseImgURL = 'https://irs3.4sqi.net/img/general/';
+
+			for (var i in venueImgsURLlist){
+				(function(i){
+	      			$.ajax({
+	      				url: venueImgsURLlist[i],
+	      				dataType: 'jsonp',
+	      				success: function(data){
+
+	      					var imgItems = data.response.photos.items;
+
+	      					for (var j in imgItems){
+	      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
+	      						var venueImgObj = {
+	      							href: venueImgURL,
+	      							title: venueName
+	      						};
+	      						// tempVenuePhotos.push(venueImgObj);
+
+	      						venuesPhotos[i].push(venueImgObj);
+
+	      					}
+	      					// venuesPhotos.push(tempVenuePhotos);
+	      					console.log(venuesPhotos);
+
+	      					// venuesPhotos[i] = tempVenuePhotos;
+	      					console.log(venuesPhotos[i]);
+	      					// tempVenuePhotos.length = 0;
+	      				}
+	      			});
+	      		})(i);
+	      			
+      			var venueIDphotos = '#' + venueIDlist[i];
+      			$(venueIDphotos).click(function( e ) {
+      				e.preventDefault();
+      				$.swipebox(venuesPhotos[i]);
+      			});
+			}
+		}
+
 		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
       	var forecastBaseURL = 'https://api.forecast.io/forecast/';
 		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
