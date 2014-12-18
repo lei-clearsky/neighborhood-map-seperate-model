@@ -272,8 +272,7 @@ function MapViewModel() {
 	      			});
 	      		*/
 	      		}
-	      		console.log(venueImgsURLlist);
-	      		console.log(venueIDlist);
+
 	      		function get2DArray(size) {
 				    size = size > 0 ? size : 0;
 				    var arr = [];
@@ -284,10 +283,19 @@ function MapViewModel() {
 				}
 
 				var venuesPhotos = get2DArray(venueIDlist.length);
-				console.log(venuesPhotos);
 	      		setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
+	      		/*
+	      		for (var i in venueIDlist){
+	      			var venueIDphotos = '#' + venueIDlist[i];
+	      			$(venueIDphotos).click(function( e ) {
+	      				e.preventDefault();
+	      				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
+	      				console.log(venueIDlistIndex);
+	      				$.swipebox(venuesPhotos[venueIDlistIndex]);
+	      			});
+	      		}
+	      		*/
 
-      		
       		// create markers
       		for (var i in self.topPicks()) {
         		createMarkers(self.topPicks()[i].venue);
@@ -315,25 +323,21 @@ function MapViewModel() {
 	      							href: venueImgURL,
 	      							title: venueName
 	      						};
-	      						// tempVenuePhotos.push(venueImgObj);
-
 	      						venuesPhotos[i].push(venueImgObj);
-
 	      					}
-	      					// venuesPhotos.push(tempVenuePhotos);
-	      					console.log(venuesPhotos);
-
-	      					// venuesPhotos[i] = tempVenuePhotos;
-	      					console.log(venuesPhotos[i]);
-	      					// tempVenuePhotos.length = 0;
+	      					// console.log(venuesPhotos);
 	      				}
 	      			});
+
+
 	      		})(i);
-	      			
-      			var venueIDphotos = '#' + venueIDlist[i];
+
+	      		var venueIDphotos = '#' + venueIDlist[i];
       			$(venueIDphotos).click(function( e ) {
       				e.preventDefault();
-      				$.swipebox(venuesPhotos[i]);
+      				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
+      				console.log(venueIDlistIndex);
+      				$.swipebox(venuesPhotos[venueIDlistIndex]);
       			});
 			}
 		}
