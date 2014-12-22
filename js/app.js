@@ -8,7 +8,7 @@ function MapViewModel() {
 	var venueLat;
 	var venueLon;
 	var venueName;
-	var bounds = window.mapBounds;
+	var bounds;
 	var service;
 	var marker;
 	var infoWindow;
@@ -71,21 +71,6 @@ function MapViewModel() {
   		return newTopPicks;
   	});
 
-/*
-  	self.skycons = function() {
-  		var icons = new Skycons(),
-          	list  = [
-            "clear-day", "clear-night", "partly-cloudy-day",
-            "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
-            "fog"
-          	];
-      	for(var i = list.length; i--; )
-        	icons.set(list[i], list[i]);
-      	icons.play();
-      	console.log(icons);
-  	}
-  	// skycons();
-*/
 	// http://stackoverflow.com/questions/24572100/skycons-cant-display-the-same-icon-twice
   	self.skycons = function() {
   		var icons = new Skycons(),
@@ -104,8 +89,7 @@ function MapViewModel() {
       	icons.play();
   	}
 
-  	// http://stackoverflow.com/questions/16250594/afterrender-for-html-binding
-  	
+  	// http://stackoverflow.com/questions/16250594/afterrender-for-html-binding 	
   	ko.bindingHandlers.afterHtmlRender = {
     	update: function(el, va, ab){
         	ab().html && va()(ab().html);
@@ -140,20 +124,7 @@ function MapViewModel() {
 
 	self.exploreKeyword.subscribe(self.computedNeighborhood);
 	self.neighborhood.subscribe(self.computedNeighborhood);
-	// test weather
-	// self.neighborhood.subscribe(self.getWeather);
-/*
-	var getWeather = function() {
-		var forecastBaseURL = 'https://api.forecast.io/forecast/';
-		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
-		var formattedLL = '/'+ currentLat + ',' + currentLon;
-		var forecastURL = forecastBaseURL + forecastAPIkey + formattedLL;
 
-		$.getJSON(forecastURL, function(data) {
-			self.forecasts(data);
-		});
-	}
-*/
 	function removeVenueMarkers() {
 	    for (var i = 0; i < venueMarkers.length; i++) {
     		venueMarkers[i].marker.setMap(null);
@@ -167,9 +138,38 @@ function MapViewModel() {
   		}
 	}
 
+	function createNeighborhoodMarker(place) {
+
+		var placeName = place.name;
+
+		var blackStar = {
+		    path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
+		    fillColor: 'black',
+		    fillOpacity: 1,
+		    scale: 0.2
+		};
+
+		var marker = new google.maps.Marker({
+			map: map,
+      		position: place.geometry.location,
+      		title: placeName,
+      		icon: blackStar
+		});
+
+		infowindow = new google.maps.InfoWindow();
+
+    	google.maps.event.addListener(marker, 'click', function() {
+    		infowindow.setContent(placeName);
+    		infoWindow.open(map, marker);
+    	});
+
+    	// venueMarkers.push(marker);
+	}
+
 	// set neighborhood marker on the map 
 	// get best nearby venues from foursquare API
 	function getNeighborhoodVenues(venueData) {
+		infowindow = new google.maps.InfoWindow();
 		venueLat = venueData.geometry.location.k;
 		venueLon = venueData.geometry.location.D;
 		currentLat = venueLat;
@@ -180,6 +180,8 @@ function MapViewModel() {
 		newNeighborhood = new google.maps.LatLng(venueLat, venueLon);
 		map.setCenter(newNeighborhood);
 
+		createNeighborhoodMarker(venueData);
+/*
 		var blackStar = {
 		    path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
 		    fillColor: 'black',
@@ -187,14 +189,14 @@ function MapViewModel() {
 		    scale: 0.2
 		};
 
-		// marker
 		marker = new google.maps.Marker({
       		map: map,
       		position: venueData.geometry.location,
       		title: venueName,
       		icon: blackStar
     	});
-    	venueMarkers.push(marker);
+
+    	// venueMarkers.push(marker);
 
     	infoWindow = new google.maps.InfoWindow({
     		content: venueName
@@ -203,8 +205,17 @@ function MapViewModel() {
     	google.maps.event.addListener(marker, 'click', function() {
     		infoWindow.open(map, marker);
     	});
-    	// get nearby venues based on neighborhood    	
-    	var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
+*/
+    	// get nearby venues based on neighborhood  
+    	getFoursquareData(); 	
+
+		// get forecast data
+		getForecastData();
+
+	};
+
+	function getFoursquareData() {
+		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
   		var query = '&query=' + self.exploreKeyword();
@@ -224,53 +235,10 @@ function MapViewModel() {
 	      			var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
 	      			var venueID = self.topPicks()[i].venue.id;
 	      			var venueName = self.topPicks()[i].venue.name;
-	      			//console.log(venueID + ': ' + venueName);
 	      			var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
 	      			venueImgsURLlist.push(venueImgsURL);
 	      			venueIDlist.push(venueID);
 
-	      			
-	      			// var baseImgURL = 'https://irs3.4sqi.net/img/general/';
-
-	      			// test nested photo ajax call
-	      		// http://stackoverflow.com/questions/17981631/jquery-ajax-inside-a-loop	
-	      		/*	
-	      		(function(i){
-	      			$.ajax({
-	      				url: venueImgsURL,
-	      				dataType: 'jsonp',
-	      				async: false,
-	      				success: function(data){
-	      					var imgItems = data.response.photos.items;
-	      					for (var j in imgItems){
-	      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
-	      						var venueImgObj = {
-	      							href: venueImgURL,
-	      							title: venueName
-	      						};
-	      						//console.log(i);
-	      						tempVenuePhotos.push(venueImgObj);
-
-	      					}
-	      					console.log(tempVenuePhotos);
-	      					// console.log(tempVenuePhotos[0].url);
-	      					// venuesPhotos.push(tempVenuePhotos);
-	      					venuesPhotos[i] = tempVenuePhotos;
-	      					console.log(venuesPhotos[i]);
-	      					// tempVenuePhotos.length = 0;
-	      					// console.log(venuesPhotos);
-	      					console.log('nested i: ' +i);
-	      				}
-	      			});
-	      		})(i);
-	      			
-	      			var venueIDphotos = '#' + venueID;
-	      			$(venueIDphotos).click(function( e ) {
-	      				e.preventDefault();
-	      				$.swipebox(venuesPhotos[i]);
-
-	      			});
-	      		*/
 	      		}
 
 	      		function get2DArray(size) {
@@ -284,65 +252,51 @@ function MapViewModel() {
 
 				var venuesPhotos = get2DArray(venueIDlist.length);
 	      		setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
-	      		/*
-	      		for (var i in venueIDlist){
-	      			var venueIDphotos = '#' + venueIDlist[i];
-	      			$(venueIDphotos).click(function( e ) {
-	      				e.preventDefault();
-	      				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
-	      				console.log(venueIDlistIndex);
-	      				$.swipebox(venuesPhotos[venueIDlistIndex]);
-	      			});
+
+	      		// create markers
+	      		for (var i in self.topPicks()) {
+	        		createMarkers(self.topPicks()[i].venue);
 	      		}
-	      		*/
-
-      		// create markers
-      		for (var i in self.topPicks()) {
-        		createMarkers(self.topPicks()[i].venue);
-      		}
-      	}	     		
+      		}	     		
       	});
+	}
 
-		// test foursquare photos api
-		var setPhotosGroups = function (venuesPhotos, venueIDlist, venueImgsURLlist){
-			// venuesPhotos.length = venueIDlist.length;
-			var baseImgURL = 'https://irs3.4sqi.net/img/general/';
+	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist){
+		var baseImgURL = 'https://irs3.4sqi.net/img/general/';
 
-			for (var i in venueImgsURLlist){
-				(function(i){
-	      			$.ajax({
-	      				url: venueImgsURLlist[i],
-	      				dataType: 'jsonp',
-	      				success: function(data){
+		for (var i in venueImgsURLlist){
+			(function(i){
+      			$.ajax({
+      				url: venueImgsURLlist[i],
+      				dataType: 'jsonp',
+      				success: function(data){
 
-	      					var imgItems = data.response.photos.items;
+      					var imgItems = data.response.photos.items;
 
-	      					for (var j in imgItems){
-	      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
-	      						var venueImgObj = {
-	      							href: venueImgURL,
-	      							title: venueName
-	      						};
-	      						venuesPhotos[i].push(venueImgObj);
-	      					}
-	      					// console.log(venuesPhotos);
-	      				}
-	      			});
-
-
-	      		})(i);
-
-	      		var venueIDphotos = '#' + venueIDlist[i];
-	      		// http://stackoverflow.com/questions/48239/getting-the-id-of-the-element-that-fired-an-event-using-jquery
-      			$(venueIDphotos).click(function( e ) {
-      				e.preventDefault();
-      				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
-      				console.log(venueIDlistIndex);
-      				$.swipebox(venuesPhotos[venueIDlistIndex]);
+      					for (var j in imgItems){
+      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
+      						var venueImgObj = {
+      							href: venueImgURL,
+      							title: venueName
+      						};
+      						venuesPhotos[i].push(venueImgObj);
+      					}
+      				}
       			});
-			}
-		}
 
+      		})(i);
+
+      		var venueIDphotos = '#' + venueIDlist[i];
+      		// http://stackoverflow.com/questions/48239/getting-the-id-of-the-element-that-fired-an-event-using-jquery
+  			$(venueIDphotos).click(function( e ) {
+  				e.preventDefault();
+  				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
+  				$.swipebox(venuesPhotos[venueIDlistIndex]);
+  			});
+		}
+	}
+
+	function getForecastData() {
 		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
       	var forecastBaseURL = 'https://api.forecast.io/forecast/';
 		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
@@ -353,14 +307,12 @@ function MapViewModel() {
 			url: forecastURL,
 			dataType: 'jsonp',
 			success: function(data){
-				// var JSONdata = JSON.parse(JSON.stringify(data));
 				self.dailyForecasts(data.daily.data);
 				self.currentlyForecasts(data.currently);
 				self.currentlySkyicon(data.currently.icon);
 			}
 		});
-
-	};
+	}
 
 	function createMarkers(venue) {
     	var lat = venue.location.lat;
@@ -375,7 +327,6 @@ function MapViewModel() {
     	var rating = venue.rating;
     	var url = venue.url;
 
-    	// console.log(photos);
 	    // marker of a popular place
 	    var venueMarker = new google.maps.Marker({
 	      map: map,
@@ -393,7 +344,8 @@ function MapViewModel() {
 	// callback method for neighborhood location
 	function neighborhoodVenuesCallback(results, status) {
 	    if (status == google.maps.places.PlacesServiceStatus.OK) {
-	      getNeighborhoodVenues(results[0]);
+
+	      	getNeighborhoodVenues(results[0]);
 	    }
 	}
 
@@ -408,7 +360,6 @@ function MapViewModel() {
 	// function that initializes the map
 	function initializeMap() {
 		mapOptions = {
-			// center: { lat: -34.397, lng: 150.644},
 			zoom: 15,
 			disableDefaultUI: true
 		};
@@ -431,10 +382,10 @@ function MapViewModel() {
     Date.prototype.getMonthName = function() {
         return months[ this.getMonth() ];
     };
+
     Date.prototype.getDayName = function() {
         return days[ this.getDay() ];
     };
-
 
 };
 
