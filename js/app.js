@@ -32,19 +32,9 @@ function MapViewModel() {
 	// var venuesPhotos = [];
 	var tempVenuePhotos = [];
 	self.photosAPIurl = ko.observableArray('');
-/*
-	self.displaySkyicon = ko.computed(function() {
-		var currentlyIcon = self.currentlyForecasts().icon;
 
-		var skyIconCanvas = ko.observable('');
-		skyIconCanvas = '<canvas id="clear-night" width="50" height="50"></canvas>';
-	});
-*/
-  	// skycons
   	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
   	self.computedDailyForecasts = ko.computed(function(){
-  		//var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  		//var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   		var newDailyForecasts = self.dailyForecasts();
   		for (var i in newDailyForecasts) {
@@ -125,16 +115,28 @@ function MapViewModel() {
 	self.exploreKeyword.subscribe(self.computedNeighborhood);
 	self.neighborhood.subscribe(self.computedNeighborhood);
 
+	self.panToMarker = function(venue) {
+		var listVenueName = venue.venue.name;
+
+		for (var i in venueMarkers) {
+			if (venueMarkers[i].title === listVenueName) {
+				google.maps.event.trigger(venueMarkers[i], 'click');
+        		map.panTo(venueMarkers[i].position);
+			}
+		}
+	}
+
+
 	function removeVenueMarkers() {
 	    for (var i = 0; i < venueMarkers.length; i++) {
-    		// venueMarkers[i].marker.setMap(null);
-    		// venueMarkers[i].marker = null;
+
     		venueMarkers[i].setMap(null);
-    		// venueMarkers[i] = null;   		
+
   		}
 
   		venueMarkers = [];
 	}
+
 
 	function createNeighborhoodMarker(place) {
 
@@ -186,6 +188,7 @@ function MapViewModel() {
 
 	};
 
+
 	function getFoursquareData() {
 		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
@@ -232,6 +235,7 @@ function MapViewModel() {
       	});
 	}
 
+
 	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist){
 		var baseImgURL = 'https://irs3.4sqi.net/img/general/';
 
@@ -266,6 +270,7 @@ function MapViewModel() {
   			});
 		}
 	}
+
 
 	function getForecastData() {
 		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
@@ -316,13 +321,17 @@ function MapViewModel() {
     	venueMarkers.push(venueMarker);
 	}
 
+
 	// callback method for neighborhood location
 	function neighborhoodVenuesCallback(results, status) {
 	    if (status == google.maps.places.PlacesServiceStatus.OK) {
 
 	      	getNeighborhoodVenues(results[0]);
+
+	      	console.log(venueMarkers);
 	    }
 	}
+
 
 	function requestNeighborhood(neighborhood) {
 	    var request = {

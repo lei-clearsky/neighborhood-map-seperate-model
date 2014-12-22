@@ -71,7 +71,7 @@
 
           <div id="venues-listing" class="venues-listing-box"> 
             <!-- ko foreach: computedTopPicks() -->
-            <div class="venue-listing-item">
+            <div data-bind="click: $root.panToMarker" class="venue-listing-item">
               <p data-bind="text: venue.name"></p>
               <span data-bind="text: venue.rating" class="badge"></span>
               <p data-bind="text: venue.location.formattedAddress"></p>
