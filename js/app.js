@@ -130,14 +130,10 @@ function MapViewModel() {
     		// venueMarkers[i].marker.setMap(null);
     		// venueMarkers[i].marker = null;
     		venueMarkers[i].setMap(null);
-    		venueMarkers[i] = null;
+    		// venueMarkers[i] = null;   		
   		}
 
-  		// fastest solution to clear an array
-  		// http://stackoverflow.com/questions/1232040/empty-an-array-in-javascript
-  		while(venueMarkers.length > 0){
-  			venueMarkers.pop();
-  		}
+  		venueMarkers = [];
 	}
 
 	function createNeighborhoodMarker(place) {
@@ -318,7 +314,6 @@ function MapViewModel() {
 	    });
 
     	venueMarkers.push(venueMarker);
-    	console.log(venueMarkers);
 	}
 
 	// callback method for neighborhood location
