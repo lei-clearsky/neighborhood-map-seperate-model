@@ -127,8 +127,10 @@ function MapViewModel() {
 
 	function removeVenueMarkers() {
 	    for (var i = 0; i < venueMarkers.length; i++) {
-    		venueMarkers[i].marker.setMap(null);
-    		venueMarkers[i].marker = null;
+    		// venueMarkers[i].marker.setMap(null);
+    		// venueMarkers[i].marker = null;
+    		venueMarkers[i].setMap(null);
+    		venueMarkers[i] = null;
   		}
 
   		// fastest solution to clear an array
@@ -156,14 +158,12 @@ function MapViewModel() {
       		icon: blackStar
 		});
 
-		infowindow = new google.maps.InfoWindow();
-
     	google.maps.event.addListener(marker, 'click', function() {
     		infowindow.setContent(placeName);
-    		infoWindow.open(map, marker);
+    		infowindow.open(map, marker);
     	});
 
-    	// venueMarkers.push(marker);
+    	venueMarkers.push(marker);
 	}
 
 	// set neighborhood marker on the map 
@@ -181,31 +181,7 @@ function MapViewModel() {
 		map.setCenter(newNeighborhood);
 
 		createNeighborhoodMarker(venueData);
-/*
-		var blackStar = {
-		    path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
-		    fillColor: 'black',
-		    fillOpacity: 1,
-		    scale: 0.2
-		};
 
-		marker = new google.maps.Marker({
-      		map: map,
-      		position: venueData.geometry.location,
-      		title: venueName,
-      		icon: blackStar
-    	});
-
-    	// venueMarkers.push(marker);
-
-    	infoWindow = new google.maps.InfoWindow({
-    		content: venueName
-    	});
-
-    	google.maps.event.addListener(marker, 'click', function() {
-    		infoWindow.open(map, marker);
-    	});
-*/
     	// get nearby venues based on neighborhood  
     	getFoursquareData(); 	
 
@@ -224,7 +200,6 @@ function MapViewModel() {
   			url: foursquareURL, 
   			dataType:'jsonp',
   			success: function(data) {
-  				//venuesPhotos.length = 0;
       			self.topPicks(data.response.groups[0].items);
 	      		// imageJSON: https://api.foursquare.com/v2/venues/4bcf9774a8b3a5939497625f/photos?client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC&v=20140806
 	      		// image: https://irs3.4sqi.net/img/general/width100/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg
@@ -238,7 +213,6 @@ function MapViewModel() {
 	      			var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
 	      			venueImgsURLlist.push(venueImgsURL);
 	      			venueIDlist.push(venueID);
-
 	      		}
 
 	      		function get2DArray(size) {
@@ -255,7 +229,8 @@ function MapViewModel() {
 
 	      		// create markers
 	      		for (var i in self.topPicks()) {
-	        		createMarkers(self.topPicks()[i].venue);
+	        		// createMarkers(self.topPicks()[i].venue);
+	        		createVenueMarker(self.topPicks()[i].venue);
 	      		}
       		}	     		
       	});
@@ -314,10 +289,12 @@ function MapViewModel() {
 		});
 	}
 
-	function createMarkers(venue) {
-    	var lat = venue.location.lat;
+
+	function createVenueMarker(venue) {
+
+		var lat = venue.location.lat;
     	var lng = venue.location.lng;
-    	var name = venue.name;
+    	var venueName = venue.name;
     	// var photos = venue.photos;
     	var category = venue.categories[0].name;
     	var position = new google.maps.LatLng(lat, lng);
@@ -329,17 +306,20 @@ function MapViewModel() {
 
 	    // marker of a popular place
 	    var venueMarker = new google.maps.Marker({
-	      map: map,
-	      position: position,
-	      title: name
+	      	map: map,
+	      	position: position,
+	      	title: venueName
 	       //icon: photos[0].getUrl({'maxWidth': 35, 'maxHeight': 35})
 	    });
 	    
 	    google.maps.event.addListener(venueMarker, 'click', function() {
-	      infoWindow.open(map, venueMarker);
+	    	infowindow.setContent(venueName);
+	      	infowindow.open(map, venueMarker);
 	    });
-		
-  	}
+
+    	venueMarkers.push(venueMarker);
+    	console.log(venueMarkers);
+	}
 
 	// callback method for neighborhood location
 	function neighborhoodVenuesCallback(results, status) {
