@@ -92,9 +92,14 @@
                   <div class="venue-rating"><span data-bind="text: venue.rating" class="badge"></span></div>
                   <div data-bind="text: venue.location.formattedAddress" class="venue-address"></div>
                 </div>
-                <div data-bind="text: venue.url" class="venue-website"></div>
-                <div data-bind="text: tips[0].text" class="venue-review"></div>
-              <!--<p data-bind="attr: {id: venue.id}">View Photos</p>-->
+                <div class="venue-website">
+                  <div class="glyphicon glyphicon-globe"></div>
+                  <div data-bind="text: venue.url" class="content"></div>
+                </div>
+                <div class="venue-review">
+                  <div class="glyphicon glyphicon-user"></div>
+                  <div data-bind="text: tips[0].text" class="content"></div>
+                </div>
               </div>
               <div class="right">
                 <img data-bind="attr: {src: photoFullURL, id: venue.id}" class="featured-photo"/>
