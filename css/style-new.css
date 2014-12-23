@@ -35,7 +35,7 @@
   font-size:18px;
   font-weight:300;
   width:460px;
-  height: 80px;
+  /* height: 100px; */
   background: #f4f4f4;
 }
 
@@ -111,7 +111,7 @@
 }
 .forecast-listing-box .forecast-listing-item{
   clear:both;
-  height:90px;
+  /* height:90px; */
 }
 
 .forecast-listing-item .left{
@@ -150,6 +150,12 @@
 
 .badge{
   background-color: #FF5A5E;
+}
+
+.group:after {
+  content: "";
+  display: table;
+  clear: both;
 }
 /* Custom, iPhone Retina */ 
 @media only screen and (min-width : 320px) {

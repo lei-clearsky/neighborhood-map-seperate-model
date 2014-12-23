@@ -45,7 +45,7 @@
             <button type="button" class="btn btn-default btn-md"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
           </form>
 
-          <div id="nh-info" class="nh-info-box">
+          <div id="nh-info" class="nh-info-box group">
             <div data-bind="text: formattedAddress" class="nj-formatted-address"></div>  
             <!--<span class="glyphicon glyphicon-plus"></span>-->
             <div class="current-temp-box"><!--<h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1>-->
@@ -66,7 +66,7 @@
           </div>
 
           <div data-bind="foreach: computedDailyForecasts()" id="forecast-listing" class="forecast-listing-box">
-            <div class="forecast-listing-item">
+            <div class="forecast-listing-item group">
               <div class="left">
                 <div data-bind="text: formatedTime" class="day-name"></div>
     
