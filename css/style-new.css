@@ -35,20 +35,21 @@
   font-size:18px;
   font-weight:300;
   width:460px;
-  /* height: 100px; */
-  background: #f4f4f4;
+  background: #5cb85c;
 }
 
 .nh-info-box h1{
   font-size:28px;
   margin-top:10px;
   font-weight:300;
+  
 }
 
 .nh-info-box .nj-formatted-address{
   padding: 10px;
   width:55%;
   float:left;
+  color:#fff;
 }
 .nh-info-box .current-temp-box{
   padding:10px;
