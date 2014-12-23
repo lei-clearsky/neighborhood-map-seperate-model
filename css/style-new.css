@@ -45,13 +45,28 @@
   
 }
 
-.nh-info-box .nj-formatted-address{
+.nh-info-box .nh-formatted-address{
+  position:relative;
   padding: 10px;
   width:55%;
   float:left;
   color:#fff;
 }
+
+.nh-formatted-address .venues-box-showhide,
+.current-temp-box .current-temp-showhide{
+  position:absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 200;
+}
+
+.nh-formatted-address .venues-box-showhide{
+  color:#333;
+}
+
 .nh-info-box .current-temp-box{
+  position:relative;
   padding:10px;
   float:left;
   width:45%;
@@ -72,6 +87,7 @@
 .nh-info-box .current-temp-box .right .right-now-icon{
   float:right;
   font-size:18px;
+  padding: 10px 10px 0 0;
 }
 .fixed-container{
   position:absolute;

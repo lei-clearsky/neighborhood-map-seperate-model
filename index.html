@@ -46,7 +46,10 @@
           </form>
 
           <div id="nh-info" class="nh-info-box group">
-            <div data-bind="text: formattedAddress" class="nj-formatted-address"></div>  
+            <div class="nh-formatted-address">
+              <span data-bind="text: formattedAddress"></span>
+              <div class="venues-box-showhide"><span class="glyphicon glyphicon-plus"></span></div>
+            </div>             
             <!--<span class="glyphicon glyphicon-plus"></span>-->
             <div class="current-temp-box">
               <div class="left">
@@ -59,6 +62,7 @@
                   <canvas data-bind="css: currentlySkyicon(), afterHtmlRender: skycons()" width="64" height="64"></canvas>
                 </div>
               </div>
+              <div class="current-temp-showhide"><span class="glyphicon glyphicon-plus"></span></div>
               <!--<span class="glyphicon glyphicon-plus"></span>-->
             </div>               
           </div>
