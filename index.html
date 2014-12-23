@@ -48,13 +48,19 @@
           <div id="nh-info" class="nh-info-box">
             <div data-bind="text: formattedAddress" class="nj-formatted-address"></div>  
             <!--<span class="glyphicon glyphicon-plus"></span>-->
-            <div class="direction-box"><!--<h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1>-->
-              <span data-bind="text: currentlyForecasts().temperature" class="currentlyTemp">            
-              </span><span>&deg;</span>
+            <div class="current-temp-box"><!--<h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1>-->
+              <div class="left">
+                <div class="right-now">Right Now</div>
+                <div data-bind="text: currentlyForecasts().temperature" class="current-temp"></div><span>&deg;</span>
+              </div>
               <!--
               <canvas data-bind="attr: {id: currentlySkyicon()}, afterHtmlRender:skycons()" width="64" height="64"></canvas>
               -->
-              <canvas data-bind="css: currentlySkyicon(), afterHtmlRender: skycons()" width="64" height="64"></canvas>
+              <div class="right">
+                <div class="right-now-icon">
+                  <canvas data-bind="css: currentlySkyicon(), afterHtmlRender: skycons()" width="64" height="64"></canvas>
+                </div>
+              </div>
               <!--<span class="glyphicon glyphicon-plus"></span>-->
             </div>               
           </div>

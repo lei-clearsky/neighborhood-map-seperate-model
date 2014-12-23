@@ -47,14 +47,30 @@
 
 .nh-info-box .nj-formatted-address{
   padding: 10px;
-  width:70%;
+  width:55%;
   float:left;
 }
-.nh-info-box .direction-box{
+.nh-info-box .current-temp-box{
+  padding:10px;
   float:left;
-  width:30%;
+  width:45%;
   height:100%;
   background:#fff;
+}
+.nh-info-box .current-temp-box .left{
+  width:110px;
+  float:left;
+}
+.nh-info-box .current-temp-box .left .current-temp{
+  float:left;
+  font-size:40px;
+}
+.nh-info-box .current-temp-box .left .right-now{
+  font-size:14px;
+}
+.nh-info-box .current-temp-box .right .right-now-icon{
+  float:right;
+  font-size:18px;
 }
 .fixed-container{
   position:absolute;
