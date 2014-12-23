@@ -26,7 +26,7 @@
 .input-group-addon{
   font-weight: 300;
   color:#fff;
-  background-color: #09c;
+  background-color: #333;
   border: none;
 }
 
@@ -121,7 +121,7 @@
 .forecast-listing-item .right{
   float:right;
   padding:10px;
-  width:200px;
+  width:250px;
 }
 
 .forecast-listing-item .middle{
