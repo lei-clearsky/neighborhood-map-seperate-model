@@ -26,7 +26,7 @@
     <div id="map-canvas"></div>
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-8 fixed-container">
+        <div class="col-md-5 fixed-container">
           <form class="form-inline" role="form">
             <div class="form-group">
               <div class="input-group">
@@ -47,6 +47,7 @@
 
           <div id="nh-info" class="nh-info-box">
             <div data-bind="text: formattedAddress" class="nj-formatted-address"></div>  
+            <!--<span class="glyphicon glyphicon-plus"></span>-->
             <div class="direction-box"><!--<h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1>-->
               <span data-bind="text: currentlyForecasts().temperature" class="currentlyTemp">            
               </span><span>&deg;</span>
@@ -54,18 +55,32 @@
               <canvas data-bind="attr: {id: currentlySkyicon()}, afterHtmlRender:skycons()" width="64" height="64"></canvas>
               -->
               <canvas data-bind="css: currentlySkyicon(), afterHtmlRender: skycons()" width="64" height="64"></canvas>
+              <!--<span class="glyphicon glyphicon-plus"></span>-->
             </div>               
           </div>
 
           <div data-bind="foreach: computedDailyForecasts()" id="forecast-listing" class="forecast-listing-box">
             <div class="forecast-listing-item">
+              <div class="left">
+                <div data-bind="text: formatedTime" class="day-name"></div>
+    
+              </div>
+              <div class="middle">
+                <div class="day-icon">
+                  <canvas data-bind="css: icon, afterHtmlRender:$parent.skycons()" width="64" height="64"></canvas>
+                </div>
+              </div>
+              <div class="right">
+                <div class="day-temp-range">
+                  <span data-bind="text: temperatureMin"></span><span>&deg;</span> - <span data-bind="text: temperatureMax"></span><span>&deg;</span></div>
+                <div data-bind="text: summary" class="day-info"></div>
+              </div>
+              <!--
               <p data-bind="text: formatedTime"></p>
               <p data-bind="text: summary"></p>
               <p><span data-bind="text: temperatureMin"></span><span>&deg;</span> - <span data-bind="text: temperatureMax"></span><span>&deg;</span></p>
-              <!--
-              <canvas data-bind="attr: {id: time}, afterHtmlRender:$parent.dailySkycons()" width="64" height="64"></canvas>
-              -->
               <canvas data-bind="css: icon, afterHtmlRender:$parent.skycons()" width="64" height="64"></canvas>
+              -->
             </div>
           </div>
 
@@ -86,7 +101,7 @@
 
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-7">
 
           <form class="form-horizontal" role="form" style="display:none;">
             <div class="form-group">

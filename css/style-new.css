@@ -94,7 +94,42 @@
 
 }
 .forecast-listing-box .forecast-listing-item{
+  clear:both;
+  height:90px;
+}
 
+.forecast-listing-item .left{
+  float:left;
+}
+
+.forecast-listing-item .right{
+  float:right;
+  padding:10px;
+  width:200px;
+}
+
+.forecast-listing-item .middle{
+  float:left;
+}
+
+.forecast-listing-item .left .day-name{
+  padding:15px 0 15px 15px;
+  font-size: 30px;
+  font-weight: 300;
+  text-align: left;
+}
+
+.forecast-listing-item .middle .day-icon{
+  padding:10px;
+}
+
+.forecast-listing-item .right .day-temp-range{
+  font-size:24px;
+  font-weight:400;
+}
+
+.forecast-listing-item .right .day-info{
+  
 }
 
 .badge{

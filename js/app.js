@@ -39,8 +39,9 @@ function MapViewModel() {
   		var newDailyForecasts = self.dailyForecasts();
   		for (var i in newDailyForecasts) {
   			var date = new Date(newDailyForecasts[i].time * 1000);
-  			//var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
-  			var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
+  			// var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
+  			// var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
+  			var formatedTime = date.getDayName();
 
   			newDailyForecasts[i]['formatedTime'] = formatedTime;
   		}
@@ -49,16 +50,16 @@ function MapViewModel() {
   	});
 
   	self.computedTopPicks = ko.computed(function(){
-  		var newTopPicks = self.topPicks();
-  		for (var i in newTopPicks) {
+  		var tempTopPicks = self.topPicks();
+  		for (var i in tempTopPicks) {
 
   			var photoPrefix = 'https://irs0.4sqi.net/img/general/';
-  			var photoSuffix = newTopPicks[i].venue.featuredPhotos.items[0].suffix;
+  			var photoSuffix = tempTopPicks[i].venue.featuredPhotos.items[0].suffix;
   			var photoFullURL = photoPrefix + 'width100' + photoSuffix;			
 
-  			newTopPicks[i]['photoFullURL'] = photoFullURL;
+  			tempTopPicks[i]['photoFullURL'] = photoFullURL;
   		}
-  		return newTopPicks;
+  		return tempTopPicks;
   	});
 
 	// http://stackoverflow.com/questions/24572100/skycons-cant-display-the-same-icon-twice
@@ -228,7 +229,7 @@ function MapViewModel() {
 
 	      		// create markers
 	      		for (var i in self.topPicks()) {
-	        		// createMarkers(self.topPicks()[i].venue);
+
 	        		createVenueMarker(self.topPicks()[i].venue);
 	      		}
       		}	     		
@@ -359,7 +360,7 @@ function MapViewModel() {
   	});
 
 	// http://stackoverflow.com/questions/4822852/how-to-get-the-day-of-week-and-the-month-of-the-year
-  	var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 
     var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
