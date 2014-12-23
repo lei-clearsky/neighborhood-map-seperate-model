@@ -48,14 +48,12 @@
           <div id="nh-info" class="nh-info-box group">
             <div data-bind="text: formattedAddress" class="nj-formatted-address"></div>  
             <!--<span class="glyphicon glyphicon-plus"></span>-->
-            <div class="current-temp-box"><!--<h1 class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>Direction</h1>-->
+            <div class="current-temp-box">
               <div class="left">
                 <div class="right-now">Right Now</div>
                 <div data-bind="text: currentlyForecasts().temperature" class="current-temp"></div><span>&deg;</span>
               </div>
-              <!--
-              <canvas data-bind="attr: {id: currentlySkyicon()}, afterHtmlRender:skycons()" width="64" height="64"></canvas>
-              -->
+
               <div class="right">
                 <div class="right-now-icon">
                   <canvas data-bind="css: currentlySkyicon(), afterHtmlRender: skycons()" width="64" height="64"></canvas>
@@ -81,25 +79,26 @@
                   <span data-bind="text: temperatureMin"></span><span>&deg;</span> - <span data-bind="text: temperatureMax"></span><span>&deg;</span></div>
                 <div data-bind="text: summary" class="day-info"></div>
               </div>
-              <!--
-              <p data-bind="text: formatedTime"></p>
-              <p data-bind="text: summary"></p>
-              <p><span data-bind="text: temperatureMin"></span><span>&deg;</span> - <span data-bind="text: temperatureMax"></span><span>&deg;</span></p>
-              <canvas data-bind="css: icon, afterHtmlRender:$parent.skycons()" width="64" height="64"></canvas>
-              -->
+
             </div>
           </div>
 
           <div id="venues-listing" class="venues-listing-box"> 
             <!-- ko foreach: computedTopPicks() -->
-            <div data-bind="click: $root.panToMarker" class="venue-listing-item">
-              <p data-bind="text: venue.name"></p>
-              <span data-bind="text: venue.rating" class="badge"></span>
-              <p data-bind="text: venue.location.formattedAddress"></p>
-              <p data-bind="text: venue.url"></p>
-              <p data-bind="text: tips[0].text"></p>
-              <p data-bind="attr: {id: venue.id}">View Photos</p>
-              <img data-bind="attr: {src: photoFullURL}">
+            <div data-bind="click: $root.panToMarker" class="venue-listing-item group">
+              <div class="left">
+                <div data-bind="text: venue.name" class="venue-name"></div>
+                <div class="venue-sub group">
+                  <div class="venue-rating"><span data-bind="text: venue.rating" class="badge"></span></div>
+                  <div data-bind="text: venue.location.formattedAddress" class="venue-address"></div>
+                </div>
+                <div data-bind="text: venue.url" class="venue-website"></div>
+                <div data-bind="text: tips[0].text" class="venue-review"></div>
+              <!--<p data-bind="attr: {id: venue.id}">View Photos</p>-->
+              </div>
+              <div class="right">
+                <img data-bind="attr: {src: photoFullURL, id: venue.id}" class="featured-photo"/>
+              </div>
             </div>  
             <!-- /ko -->         
 

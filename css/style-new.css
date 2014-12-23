@@ -148,10 +148,58 @@
   
 }
 
+.venue-listing-item .left{
+  width:70%;
+  float:left;
+}
+
+.venue-listing-item .left .venue-name{
+  font-size: 24px;
+}
+
+.venue-listing-item .left .venue-sub{
+  margin-bottom:10px;
+}
+
+.venue-listing-item .left .venue-sub .venue-rating{
+  float:left;
+  
+  clear:right;
+}
+.venue-listing-item .left .venue-sub .venue-rating .badge{
+  font-size: 30px;
+  font-weight:300;
+}
+
+.venue-listing-item .left .venue-sub .venue-address{
+  width:230px;
+  padding-left:10px;
+  float:left;
+  font-size: 12px;
+}
+
+.venue-listing-item .left .venue-website{
+  font-size: 14px;
+}
+
+.venue-listing-item .left .venue-review{
+  font-size: 14px;
+}
+
+.venue-listing-item .right{
+  width:30%;
+  float:left;
+}
+
+.venue-listing-item .right .featured-photo{
+  padding: 10px;
+  float:right;
+}
+
 .badge{
   background-color: #FF5A5E;
 }
-
+/* http://stackoverflow.com/questions/4009931/css-div-height-problem-on-float-set */
 .group:after {
   content: "";
   display: table;
