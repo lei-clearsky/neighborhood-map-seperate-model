@@ -23,7 +23,7 @@ function MapViewModel() {
 
 
 	self.exploreKeyword = ko.observable('');
-	self.neighborhood = ko.observable('');
+	self.neighborhood = ko.observable(defaultNeighborhood);
 	self.formattedAddress = ko.observable('');
 	self.topPicks = ko.observableArray('');
 	self.dailyForecasts = ko.observableArray('');
@@ -105,8 +105,8 @@ function MapViewModel() {
 /*
 	self.computedNeighborhood = ko.computed(function() {
 		if (self.neighborhood() != '') {
-			console.log('test1');
-			removeVenueMarkers();
+			if (venueMarkers.length > 0)
+				removeVenueMarkers();
 			requestNeighborhood(self.neighborhood());
 		}	
 	});
@@ -114,7 +114,8 @@ function MapViewModel() {
 
 	self.computedNeighborhood = function() {
 		if (self.neighborhood() != '') {
-			removeVenueMarkers();
+			if (venueMarkers.length > 0)
+				removeVenueMarkers();
 			requestNeighborhood(self.neighborhood());
 		}	
 	};

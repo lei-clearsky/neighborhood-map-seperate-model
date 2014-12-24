@@ -48,7 +48,10 @@
           <div id="nh-info" class="nh-info-box group">
             <div class="nh-formatted-address">
               <span data-bind="text: formattedAddress"></span>
+              <!--
               <div class="venues-box-showhide" data-bind="click:updateVObservable"><span class="glyphicon glyphicon-plus"></span></div>
+              -->
+              <div class="venues-box-showhide" data-bind="click:updateVObservable()"><span data-bind="css: {'glyphicon-plus': !displayVenuesList(), 'glyphicon-minus': displayVenuesList()}" class="glyphicon"></span></div>
             </div>             
             <!--<span class="glyphicon glyphicon-plus"></span>-->
             <div class="current-temp-box">
@@ -62,7 +65,12 @@
                   <canvas data-bind="css: currentlySkyicon(), afterHtmlRender: skycons()" width="64" height="64"></canvas>
                 </div>
               </div>
+              <!--
               <div class="current-temp-showhide" data-bind="click:updateFObservable"><span class="glyphicon glyphicon-plus"></span></div>
+              -->
+              
+              <div class="current-temp-showhide" data-bind="click:updateFObservable()"><span data-bind="css: {'glyphicon-plus': !displayForecastsList(), 'glyphicon-minus': displayForecastsList()}" class="glyphicon"></span></div>
+            
               <!--<span class="glyphicon glyphicon-plus"></span>-->
             </div>               
           </div>
