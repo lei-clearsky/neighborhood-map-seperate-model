@@ -128,7 +128,10 @@ function MapViewModel() {
 
 		for (var i in venueMarkers) {
 			if (venueMarkers[i].title === listVenueName) {
-				google.maps.event.trigger(venueMarkers[i], 'click');
+				var content = listVenueName;
+				// google.maps.event.trigger(venueMarkers[i], 'click');
+				infowindow.setContent(content);
+				infowindow.open(map, venueMarkers[i]);
         		map.panTo(venueMarkers[i].position);
 			}
 		}
@@ -304,6 +307,7 @@ function MapViewModel() {
 		var lat = venue.location.lat;
     	var lng = venue.location.lng;
     	var venueName = venue.name;
+    	var venueID = venue.id;
     	// var photos = venue.photos;
     	var category = venue.categories[0].name;
     	var position = new google.maps.LatLng(lat, lng);
@@ -322,6 +326,12 @@ function MapViewModel() {
 	    });
 	    
 	    google.maps.event.addListener(venueMarker, 'click', function() {
+	    	
+	    	document.getElementById(venueID).scrollIntoView();
+	    	var clickEvent = jQuery.Event('click');
+			clickEvent.stopPropagation();
+	    	$('#' + venueID).closest(".venue-listing-item").trigger(clickEvent);
+	    	
 	    	infowindow.setContent(venueName);
 	      	infowindow.open(map, venueMarker);
 	    });

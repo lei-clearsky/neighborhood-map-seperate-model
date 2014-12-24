@@ -105,7 +105,7 @@
 }
 .forecast-listing-box .forecast-listing-item,
 .venues-listing-box .venue-listing-item{
-  margin: 10px;
+  padding: 10px;
   border-bottom: 1px solid #f4f4f4;
 }
 .forecast-listing-box::-webkit-scrollbar,
@@ -168,6 +168,12 @@
 
 .venue-listing-item{
   padding-bottom: 10px;
+}
+
+.venue-listing-item:visited,
+.venue-listing-item:hover,
+.venue-listing-item:active{
+  background:#f0f0f0;
 }
 
 .venue-listing-item .glyphicon{
