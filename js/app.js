@@ -126,11 +126,13 @@ function MapViewModel() {
 
 	self.panToMarker = function(venue) {
 		var listVenueName = venue.venue.name;
+		var venueID = venue.venue.id;
 
 		for (var i in venueMarkers) {
 			if (venueMarkers[i].title === listVenueName) {
 				var content = listVenueName;
 				// google.maps.event.trigger(venueMarkers[i], 'click');
+				self.selectedVenue(venueID);
 				infowindow.setContent(content);
 				infowindow.open(map, venueMarkers[i]);
         		map.panTo(venueMarkers[i].position);
