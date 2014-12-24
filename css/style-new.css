@@ -96,6 +96,7 @@
 }
 .forecast-listing-box,
 .venues-listing-box{
+  /* display:none; */
   overflow:auto;
   margin-top:10px;
   width:460px;

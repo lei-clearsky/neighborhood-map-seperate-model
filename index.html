@@ -48,7 +48,7 @@
           <div id="nh-info" class="nh-info-box group">
             <div class="nh-formatted-address">
               <span data-bind="text: formattedAddress"></span>
-              <div class="venues-box-showhide"><span class="glyphicon glyphicon-plus"></span></div>
+              <div class="venues-box-showhide" data-bind="click:updateVObservable"><span class="glyphicon glyphicon-plus"></span></div>
             </div>             
             <!--<span class="glyphicon glyphicon-plus"></span>-->
             <div class="current-temp-box">
@@ -62,12 +62,12 @@
                   <canvas data-bind="css: currentlySkyicon(), afterHtmlRender: skycons()" width="64" height="64"></canvas>
                 </div>
               </div>
-              <div class="current-temp-showhide"><span class="glyphicon glyphicon-plus"></span></div>
+              <div class="current-temp-showhide" data-bind="click:updateFObservable"><span class="glyphicon glyphicon-plus"></span></div>
               <!--<span class="glyphicon glyphicon-plus"></span>-->
             </div>               
           </div>
 
-          <div data-bind="foreach: computedDailyForecasts()" id="forecast-listing" class="forecast-listing-box">
+          <div data-bind="visible: displayForecastsList, foreach: computedDailyForecasts()" id="forecast-listing" class="forecast-listing-box" style="display:none">
             <div class="forecast-listing-item group">
               <div class="left">
                 <div data-bind="text: formatedTime" class="day-name"></div>
@@ -87,7 +87,7 @@
             </div>
           </div>
 
-          <div id="venues-listing" class="venues-listing-box"> 
+          <div data-bind="visible: displayVenuesList" id="venues-listing" class="venues-listing-box" style="display:none"> 
             <!-- ko foreach: computedTopPicks() -->
             <div data-bind="click: $root.panToMarker" class="venue-listing-item group">
               <div class="left">

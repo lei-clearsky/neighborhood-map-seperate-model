@@ -86,16 +86,22 @@ function MapViewModel() {
         	ab().html && va()(ab().html);
     	}
 	}
+
 	
 	// display neighborhood info
-	self.displayNeighborhood = ko.computed(function() {
-
-	});
+	self.displayForecastsList = ko.observable('false');
 
 	// update venues on the list display
-	self.displayVenuesList = ko.computed(function(){
+	self.displayVenuesList = ko.observable('false');
 
-	});
+	self.updateFObservable = function(){
+		self.displayForecastsList(!self.displayForecastsList());
+		console.log(self.displayForecastsList());
+	}
+	self.updateVObservable = function(){
+		self.displayVenuesList(!self.displayVenuesList());
+		console.log(self.displayVenuesList());
+	}
 /*
 	self.computedNeighborhood = ko.computed(function() {
 		if (self.neighborhood() != '') {
@@ -329,7 +335,6 @@ function MapViewModel() {
 
 	      	getNeighborhoodVenues(results[0]);
 
-	      	console.log(venueMarkers);
 	    }
 	}
 
