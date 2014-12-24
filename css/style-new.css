@@ -176,6 +176,10 @@
   background:#f0f0f0;
 }
 
+.venues-listing-box .selected-venue-item{
+  background:#f0f0f0;
+}
+
 .venue-listing-item .glyphicon{
   padding-right: 5px;
   float:left;

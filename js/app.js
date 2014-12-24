@@ -32,6 +32,7 @@ function MapViewModel() {
 	// var venuesPhotos = [];
 	var tempVenuePhotos = [];
 	self.photosAPIurl = ko.observableArray('');
+	self.selectedVenue = ko.observable('');
 
   	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
   	self.computedDailyForecasts = ko.computed(function(){
@@ -326,12 +327,13 @@ function MapViewModel() {
 	    });
 	    
 	    google.maps.event.addListener(venueMarker, 'click', function() {
-	    	
+	    	// http://stackoverflow.com/questions/4884839/how-do-i-get-a-element-to-scroll-into-view-using-jquery
 	    	document.getElementById(venueID).scrollIntoView();
-	    	var clickEvent = jQuery.Event('click');
-			clickEvent.stopPropagation();
-	    	$('#' + venueID).closest(".venue-listing-item").trigger(clickEvent);
-	    	
+	    	// var clickEvent = jQuery.Event('click');
+			// clickEvent.stopPropagation();
+	    	// $('#' + venueID).closest(".venue-listing-item").trigger('clickEvent');
+	    	self.selectedVenue(venueID);
+	    	console.log(self.selectedVenue());
 	    	infowindow.setContent(venueName);
 	      	infowindow.open(map, venueMarker);
 	    });

@@ -97,7 +97,7 @@
 
           <div data-bind="visible: displayVenuesList" id="venues-listing" class="venues-listing-box" style="display:none"> 
             <!-- ko foreach: computedTopPicks() -->
-            <div data-bind="click: $root.panToMarker" class="venue-listing-item group">
+            <div data-bind="css:{'selected-venue-item': venue.id === $root.selectedVenue()}, click: $root.panToMarker" class="venue-listing-item group">
               <div class="left">
                 <div data-bind="text: venue.name" class="venue-name"></div>
                 <div class="venue-sub group">
