@@ -266,7 +266,7 @@ function MapViewModel() {
 				}
 
 				var venuesPhotos = get2DArray(venueIDlist.length);
-	      		setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
+	      		setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist, venueName);
 
 	      		// create markers
 	      		for (var i in self.topPicks()) {
@@ -278,7 +278,7 @@ function MapViewModel() {
 	}
 
 
-	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist){
+	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist, venueName){
 		var baseImgURL = 'https://irs3.4sqi.net/img/general/';
 
 		for (var i in venueImgsURLlist){
