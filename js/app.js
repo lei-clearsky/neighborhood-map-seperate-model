@@ -125,15 +125,13 @@ function MapViewModel() {
 	self.neighborhood.subscribe(self.computedNeighborhood);
 
 	self.panToMarker = function(venue) {
-		var listVenueName = venue.venue.name;
-		var venueID = venue.venue.id;
+		var venueInfo = setVenueInfowindow(venue.venue);
 
 		for (var i in venueMarkers) {
-			if (venueMarkers[i].title === listVenueName) {
-				var content = listVenueName;
+			if (venueMarkers[i].title === venueInfo.venueName) {
 				// google.maps.event.trigger(venueMarkers[i], 'click');
-				self.selectedVenue(venueID);
-				infowindow.setContent(content);
+				self.selectedVenue(venueInfo.venueID);
+				infowindow.setContent(venueInfo.contentString);
 				infowindow.open(map, venueMarkers[i]);
         		map.panTo(venueMarkers[i].position);
 			}
@@ -305,38 +303,71 @@ function MapViewModel() {
 	}
 
 
-	function createVenueMarker(venue) {
-
+	function setVenueInfowindow(venue){
 		var lat = venue.location.lat;
     	var lng = venue.location.lng;
     	var venueName = venue.name;
     	var venueID = venue.id;
-    	// var photos = venue.photos;
-    	var category = venue.categories[0].name;
-    	var position = new google.maps.LatLng(lat, lng);
-    	var address = venue.location.formattedAddress;
-    	var contact = venue.contact.formattedPhone;
+    	var venuePosition = new google.maps.LatLng(lat, lng);
+    	var venueAddress = venue.location.formattedAddress;
+    	var venueContact = venue.contact.formattedPhone;
     	var foursquareUrl = "https://foursquare.com/v/" + venue.id;
-    	var rating = venue.rating;
-    	var url = venue.url;
+    	var venueRating = venue.rating;
+    	var venueUrl = venue.url;
 
+    	if (!venueContact)
+    		venueContact = 'Contact not available';
+		if (!venueUrl)
+    		venueUrl = 'Website not available';
+
+
+    	// https://developers.google.com/maps/documentation/javascript/infowindows
+    	var contentString = '<div class="venue-infowindow">' 
+    						+ '<div class="venue-name">'
+    						+ '<a href ="' + foursquareUrl + '">'
+    						+ venueName
+    						+ '</a>'
+    						+ '<span class="venue-rating badge">'
+    						+ venueRating
+    						+ '</span>'
+    						+ '</div>'
+    						+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
+    						+ venueAddress
+    						+ '</div>'
+    						+ '<div class="venue-contact"><span class="glyphicon glyphicon-earphone"></span>'
+    						+ venueContact
+    						+ '</div>'  
+    						+ '<div class="venue-url"><span class="glyphicon glyphicon-globe"></span>'
+    						+ venueUrl
+    						+ '</div>'  						    						    						
+    						+ '</div>';
+    	return	{
+    				'venueName': venueName,
+    				'contentString': contentString,
+    				'venueID': venueID,
+    				'venuePosition': venuePosition
+    			}
+
+	}
+
+	function createVenueMarker(venue) {
+
+		var venueInfo = setVenueInfowindow(venue);
 	    // marker of a popular place
 	    var venueMarker = new google.maps.Marker({
 	      	map: map,
-	      	position: position,
-	      	title: venueName
-	       //icon: photos[0].getUrl({'maxWidth': 35, 'maxHeight': 35})
+	      	position: venueInfo.venuePosition,
+	      	title: venueInfo.venueName
 	    });
 	    
 	    google.maps.event.addListener(venueMarker, 'click', function() {
 	    	// http://stackoverflow.com/questions/4884839/how-do-i-get-a-element-to-scroll-into-view-using-jquery
-	    	document.getElementById(venueID).scrollIntoView();
+	    	document.getElementById(venueInfo.venueID).scrollIntoView();
 	    	// var clickEvent = jQuery.Event('click');
 			// clickEvent.stopPropagation();
 	    	// $('#' + venueID).closest(".venue-listing-item").trigger('clickEvent');
-	    	self.selectedVenue(venueID);
-	    	console.log(self.selectedVenue());
-	    	infowindow.setContent(venueName);
+	    	self.selectedVenue(venueInfo.venueID);
+	    	infowindow.setContent(venueInfo.contentString);
 	      	infowindow.open(map, venueMarker);
 	    });
 

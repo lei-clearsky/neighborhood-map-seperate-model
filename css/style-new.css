@@ -115,9 +115,8 @@
 }
 .forecast-listing-box::-webkit-scrollbar-thumb,
 .venues-listing-box::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  min-height: 28px;
-  box-shadow: inset 1px 1px 0 rgba(0,0,0,.1),inset 0 -1px 0 rgba(0,0,0,.07);
+  background-color: #5cb85c;
+  min-height: 30px;
 }
 .forecast-listing-box::-webkit-scrollbar-thumb:hover,
 .venues-listing-box::-webkit-scrollbar-thumb:hover {
@@ -173,11 +172,11 @@
 .venue-listing-item:visited,
 .venue-listing-item:hover,
 .venue-listing-item:active{
-  background:#f0f0f0;
+  background:#fafafa;
 }
 
 .venues-listing-box .selected-venue-item{
-  background:#f0f0f0;
+  background:#fafafa;
 }
 
 .venue-listing-item .glyphicon{
@@ -244,6 +243,24 @@
 .badge{
   background-color: #5cb85c;
 }
+
+.venue-infowindow{
+  max-width: 200px;
+}
+
+.venue-infowindow .venue-name{
+  font-size:16px;
+  font-weight: 400;
+}
+
+.venue-infowindow .venue-rating{
+  margin-left:5px;
+}
+
+.venue-infowindow .glyphicon{
+  margin-right:5px;
+}
+
 /* http://stackoverflow.com/questions/4009931/css-div-height-problem-on-float-set */
 .group:after {
   content: "";
