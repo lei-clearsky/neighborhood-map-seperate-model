@@ -101,16 +101,20 @@
               <div class="left">
                 <div data-bind="text: venue.name" class="venue-name"></div>
                 <div class="venue-sub group">
-                  <div class="venue-rating"><span data-bind="text: venue.rating" class="badge"></span></div>
+                  <div class="venue-rating"><span data-bind="text: venue.formatedRating" class="badge"></span></div>
                   <div data-bind="text: venue.location.formattedAddress" class="venue-address"></div>
+                </div>
+                 <div class="venue-contact">
+                  <div class="glyphicon glyphicon-earphone"></div>
+                  <div data-bind="text: formatedContact" class="content"></div>
                 </div>
                 <div class="venue-website">
                   <div class="glyphicon glyphicon-globe"></div>
-                  <div data-bind="text: venue.url" class="content"></div>
+                  <div data-bind="text: formatedUrl" class="content"></div>
                 </div>
                 <div class="venue-review">
                   <div class="glyphicon glyphicon-user"></div>
-                  <div data-bind="text: tips[0].text" class="content"></div>
+                  <div data-bind="text: formatedTip" class="content"></div>
                 </div>
               </div>
               <div class="right">

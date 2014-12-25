@@ -222,11 +222,9 @@
   font-size: 12px;
 }
 
-.venue-listing-item .left .venue-website{
-  font-size: 14px;
-}
-
-.venue-listing-item .left .venue-review{
+.venue-listing-item .left .venue-website,
+.venue-listing-item .left .venue-review
+.venue-listing-item .left .venue-contact{
   font-size: 14px;
 }
 

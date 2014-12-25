@@ -52,13 +52,43 @@ function MapViewModel() {
 
   	self.computedTopPicks = ko.computed(function(){
   		var tempTopPicks = self.topPicks();
+
   		for (var i in tempTopPicks) {
 
   			var photoPrefix = 'https://irs0.4sqi.net/img/general/';
-  			var photoSuffix = tempTopPicks[i].venue.featuredPhotos.items[0].suffix;
-  			var photoFullURL = photoPrefix + 'width100' + photoSuffix;			
+  			var photoFullURL = 'http://placehold.it/100x100';
 
+  			if (!tempTopPicks[i].venue.contact.formattedPhone){
+  				tempTopPicks[i].formatedContact = 'No contact available';
+  			}else{
+  				tempTopPicks[i].formatedContact = tempTopPicks[i].venue.contact.formattedPhone;
+  			}
+
+  			if (!tempTopPicks[i].tips){
+  				tempTopPicks[i].formatedTip = 'No reviews available';
+  			}else{
+  				tempTopPicks[i].formatedTip = tempTopPicks[i].tips[0].text;
+  			}
+
+  			if (!tempTopPicks[i].venue.url){
+  				tempTopPicks[i].formatedUrl = 'No website available';
+  			}else{
+  				tempTopPicks[i].formatedUrl = tempTopPicks[i].venue.url;
+  			}
+
+  			if (!tempTopPicks[i].venue.rating){
+  				tempTopPicks[i].venue.formatedRating = '0.0';
+  			}else{
+  				tempTopPicks[i].venue.formatedRating = tempTopPicks[i].venue.rating;
+  			}
+
+  			if (tempTopPicks[i].venue.featuredPhotos){
+  				var photoSuffix = tempTopPicks[i].venue.featuredPhotos.items[0].suffix;
+  				photoFullURL = photoPrefix + 'width100' + photoSuffix;
+  			}
+ 						
   			tempTopPicks[i]['photoFullURL'] = photoFullURL;
+
   		}
   		return tempTopPicks;
   	});
@@ -319,6 +349,8 @@ function MapViewModel() {
     		venueContact = 'Contact not available';
 		if (!venueUrl)
     		venueUrl = 'Website not available';
+    	if (!venueRating)
+    		venueRating = '0.0';
 
 
     	// https://developers.google.com/maps/documentation/javascript/infowindows
@@ -363,9 +395,9 @@ function MapViewModel() {
 	    google.maps.event.addListener(venueMarker, 'click', function() {
 	    	// http://stackoverflow.com/questions/4884839/how-do-i-get-a-element-to-scroll-into-view-using-jquery
 	    	document.getElementById(venueInfo.venueID).scrollIntoView();
-	    	// var clickEvent = jQuery.Event('click');
-			// clickEvent.stopPropagation();
-	    	// $('#' + venueID).closest(".venue-listing-item").trigger('clickEvent');
+	    	var clickEvent = jQuery.Event('click');
+			clickEvent.stopPropagation();
+	    	$('#' + venueInfo.venueID).closest(".venue-listing-item").trigger('clickEvent');
 	    	self.selectedVenue(venueInfo.venueID);
 	    	infowindow.setContent(venueInfo.contentString);
 	      	infowindow.open(map, venueMarker);
