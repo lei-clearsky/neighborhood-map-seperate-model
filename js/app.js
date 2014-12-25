@@ -401,6 +401,7 @@ function MapViewModel() {
 	    	self.selectedVenue(venueInfo.venueID);
 	    	infowindow.setContent(venueInfo.contentString);
 	      	infowindow.open(map, venueMarker);
+	      	map.panTo(venueInfo.venuePosition);
 	    });
 
     	venueMarkers.push(venueMarker);
