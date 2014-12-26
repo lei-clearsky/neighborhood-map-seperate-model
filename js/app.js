@@ -1,4 +1,4 @@
-function MapViewModel() {
+function AppViewModel() {
 
 	var self = this;
 	var map; 
@@ -12,7 +12,7 @@ function MapViewModel() {
 	var service;
 	var marker;
 	var infoWindow;
-	var defaultExploreKeyword = 'bestnearby';
+	var defaultExploreKeyword = 'best nearby';
 	var defaultNeighborhood = 'new york';
 	var newNeighborhood;
 	var currentLat;
@@ -478,7 +478,7 @@ function MapViewModel() {
 // initialize the MapViewModel binding
 $(function() {
 
-  ko.applyBindings(new MapViewModel());
+  ko.applyBindings(new AppViewModel());
 
 
 });
