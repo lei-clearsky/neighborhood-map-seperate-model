@@ -266,29 +266,39 @@
   display: table;
   clear: both;
 }
-/* Custom, iPhone Retina */ 
+
+/* Custom, iPhone Retina 
 @media only screen and (min-width : 320px) {
 
 }
+*/ 
 
-/* Extra Small Devices, Phones */ 
+/* Extra Small Devices, Phones 
 @media only screen and (min-width : 480px) {
 
 }
-
+*/ 
 /* Small Devices, Tablets */
-@media only screen and (min-width : 768px) {
+@media only screen and (max-width : 768px) {
+
+  .nh-info-box .current-temp-box .right .right-now-icon{
+    display:none;
+  }
+
+  .nh-info-box .current-temp-box .left .current-temp{
+    font-size:24px;
+  }
 
 }
 
-/* Medium Devices, Desktops */
+/* Medium Devices, Desktops 
 @media only screen and (min-width : 992px) {
   
 }
-
-/* Large devices (large desktops, 1200px and up) */
+*/ 
+/* Large devices (large desktops, 1200px and up) 
 @media (min-width: 1200px) {
 
 }
-
+*/ 
 
