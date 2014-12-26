@@ -20,6 +20,7 @@
 }
 
 .form-control{
+  width:170px;
   -webkit-box-shadow: none; 
   box-shadow: none; 
 }
@@ -31,7 +32,7 @@
 }
 
 .nh-info-box{
-  margin-top:10px;
+  margin-top:5px;
   font-size:18px;
   font-weight:300;
   width:460px;
@@ -92,13 +93,14 @@
 .fixed-container{
   position:absolute;
   z-index:100;
-  top:20px;
+  top:5px;
+  margin:0 5px;
 }
 .forecast-listing-box,
 .venues-listing-box{
   display:block;
   overflow:auto;
-  margin-top:10px;
+  margin-top:5px;
   width:460px;
   height: 300px;
   background: #fff;
@@ -281,13 +283,46 @@
 /* Small Devices, Tablets */
 @media only screen and (max-width : 768px) {
 
+  .search-button{
+    display:none;
+  }
+
+  .form-group{
+    margin-bottom:5px;
+  }
+
+  .nh-info-box{
+    width:320px;
+    font-size:14px;
+    position:fixed;
+    bottom:0;
+  }
+
   .nh-info-box .current-temp-box .right .right-now-icon{
     display:none;
   }
 
   .nh-info-box .current-temp-box .left .current-temp{
-    font-size:24px;
+    font-size:20px;
   }
+
+  .forecast-listing-box, .venues-listing-box{
+    width:100%;
+  }
+
+  .venue-listing-item .left .venue-sub .venue-address{
+    width:70%;
+  }
+
+  .venue-listing-item .content{
+    width:90%;
+  }
+
+  .forecast-listing-item .right{
+    width:50%;
+  }
+
+
 
 }
 
