@@ -274,7 +274,7 @@ function MapViewModel() {
 				}
 
 				var venuesPhotos = get2DArray(venueIDlist.length);
-	      		setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist, venueName);
+	      		setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
 
 	      		// create markers
 	      		for (var i in self.topPicks()) {
@@ -295,7 +295,7 @@ function MapViewModel() {
 	}
 
 
-	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist, venueName){
+	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist){
 		var baseImgURL = 'https://irs3.4sqi.net/img/general/';
 
 		for (var i in venueImgsURLlist){
@@ -355,6 +355,7 @@ function MapViewModel() {
     	var lng = venue.location.lng;
     	var venueName = venue.name;
     	var venueID = venue.id;
+    	var venueCategory = venue.categories[0].name;
     	var venuePosition = new google.maps.LatLng(lat, lng);
     	var venueAddress = venue.location.formattedAddress;
     	var venueContact = venue.contact.formattedPhone;
@@ -379,6 +380,9 @@ function MapViewModel() {
     						+ '<span class="venue-rating badge">'
     						+ venueRating
     						+ '</span>'
+    						+ '</div>'
+    						+ '<div class="venue-category"><span class="glyphicon glyphicon-tag"></span>'
+    						+ venueCategory
     						+ '</div>'
     						+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
     						+ venueAddress
