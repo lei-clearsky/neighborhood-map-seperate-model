@@ -292,10 +292,14 @@
   }
 
   .nh-info-box{
-    width:320px;
+    width:300px;
     font-size:14px;
     position:fixed;
     bottom:0;
+  }
+
+  .nh-info-box .current-temp-box .left .right-now{
+    display:none;
   }
 
   .nh-info-box .current-temp-box .right .right-now-icon{
@@ -322,7 +326,52 @@
     width:50%;
   }
 
+}
 
+@media only screen and (max-width : 320px) {
+
+  .search-button{
+    display:none;
+  }
+
+  .form-group{
+    margin-bottom:5px;
+  }
+
+  .nh-info-box{
+    width:300px;
+    font-size:14px;
+    position:fixed;
+    bottom:0;
+  }
+
+  .nh-info-box .current-temp-box .left .right-now{
+    display:none;
+  }
+
+  .nh-info-box .current-temp-box .right .right-now-icon{
+    display:none;
+  }
+
+  .nh-info-box .current-temp-box .left .current-temp{
+    font-size:20px;
+  }
+
+  .forecast-listing-box, .venues-listing-box{
+    width:100%;
+  }
+
+  .venue-listing-item .left .venue-sub .venue-address{
+    width:70%;
+  }
+
+  .venue-listing-item .content{
+    width:90%;
+  }
+
+  .forecast-listing-item .right{
+    width:50%;
+  }
 
 }
 
