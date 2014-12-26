@@ -18,10 +18,6 @@ function MapViewModel() {
 	var currentLat;
 	var currentLon;
 
-	
-	// var neighborhood;
-
-
 	self.exploreKeyword = ko.observable('');
 	self.neighborhood = ko.observable(defaultNeighborhood);
 	self.formattedAddress = ko.observable('');
@@ -29,10 +25,21 @@ function MapViewModel() {
 	self.dailyForecasts = ko.observableArray('');
 	self.currentlyForecasts = ko.observable('');
 	self.currentlySkyicon = ko.observable('');
-	// var venuesPhotos = [];
-	var tempVenuePhotos = [];
 	self.photosAPIurl = ko.observableArray('');
 	self.selectedVenue = ko.observable('');
+
+	// http://stackoverflow.com/questions/4822852/how-to-get-the-day-of-week-and-the-month-of-the-year
+  	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    Date.prototype.getMonthName = function() {
+        return months[ this.getMonth() ];
+    };
+
+    Date.prototype.getDayName = function() {
+        return days[ this.getDay() ];
+    };
 
   	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
   	self.computedDailyForecasts = ko.computed(function(){
@@ -118,7 +125,7 @@ function MapViewModel() {
     	}
 	}
 
-	
+	// showhide functions
 	// display neighborhood info
 	self.displayForecastsList = ko.observable('false');
 
@@ -127,18 +134,18 @@ function MapViewModel() {
 
 	self.updateFObservable = function(){
 		self.displayForecastsList(!self.displayForecastsList());
-		console.log(self.displayForecastsList());
 	}
 	self.updateVObservable = function(){
 		self.displayVenuesList(!self.displayVenuesList());
-		console.log(self.displayVenuesList());
 	}
+
 /*
 	self.computedNeighborhood = ko.computed(function() {
 		if (self.neighborhood() != '') {
 			if (venueMarkers.length > 0)
 				removeVenueMarkers();
-			requestNeighborhood(self.neighborhood());
+
+			getNeighborhood(self.neighborhood());
 		}	
 	});
 */
@@ -147,12 +154,14 @@ function MapViewModel() {
 		if (self.neighborhood() != '') {
 			if (venueMarkers.length > 0)
 				removeVenueMarkers();
-			requestNeighborhood(self.neighborhood());
+			getNeighborhood(self.neighborhood());
 		}	
 	};
 
+	self.neighborhood.subscribe(self.computedNeighborhood);	
+
 	self.exploreKeyword.subscribe(self.computedNeighborhood);
-	self.neighborhood.subscribe(self.computedNeighborhood);
+
 
 	self.panToMarker = function(venue) {
 		var venueInfo = setVenueInfowindow(venue.venue);
@@ -209,6 +218,7 @@ function MapViewModel() {
 	// set neighborhood marker on the map 
 	// get best nearby venues from foursquare API
 	function getNeighborhoodVenues(venueData) {
+		console.log('3');
 		infowindow = new google.maps.InfoWindow();
 		venueLat = venueData.geometry.location.k;
 		venueLon = venueData.geometry.location.D;
@@ -241,9 +251,7 @@ function MapViewModel() {
   			url: foursquareURL, 
   			dataType:'jsonp',
   			success: function(data) {
-      			self.topPicks(data.response.groups[0].items);
-	      		// imageJSON: https://api.foursquare.com/v2/venues/4bcf9774a8b3a5939497625f/photos?client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC&v=20140806
-	      		// image: https://irs3.4sqi.net/img/general/width100/2017397_09ITdxhLFkJbkviObrYIo8TRYgpecX91UOzrO0a89gA.jpg
+  				self.topPicks(data.response.groups[0].items);
 	      		// create venues photos
 	      		var venueImgsURLlist = [];
 	      		var venueIDlist = [];
@@ -273,6 +281,15 @@ function MapViewModel() {
 
 	        		createVenueMarker(self.topPicks()[i].venue);
 	      		}
+
+	      		// bounds
+	      		var tempBounds = data.response.suggestedBounds;
+			      if (tempBounds != undefined) {
+			        bounds = new google.maps.LatLngBounds(
+			          new google.maps.LatLng(tempBounds.sw.lat, tempBounds.sw.lng),
+			          new google.maps.LatLng(tempBounds.ne.lat, tempBounds.ne.lng));
+			        map.fitBounds(bounds);
+			      }
       		}	     		
       	});
 	}
@@ -410,20 +427,26 @@ function MapViewModel() {
 
 	// callback method for neighborhood location
 	function neighborhoodVenuesCallback(results, status) {
+		console.log('2.1');
 	    if (status == google.maps.places.PlacesServiceStatus.OK) {
-
+	    	console.log('2');
 	      	getNeighborhoodVenues(results[0]);
 
 	    }
 	}
 
 
-	function requestNeighborhood(neighborhood) {
+	function getNeighborhood(neighborhood) {
 	    var request = {
 	      query: neighborhood
 	    };
 	    service = new google.maps.places.PlacesService(map);
 	    service.textSearch(request, neighborhoodVenuesCallback);
+	    console.log('1');
+	}
+
+	function initializeNeighborhood(neighborhood){
+		getNeighborhood(neighborhood);
 	}
 
 	// function that initializes the map
@@ -436,30 +459,22 @@ function MapViewModel() {
 		$('#map-canvas').height($(window).height());
 	};
 
-	google.maps.event.addDomListener(window, "load", initializeMap);
+	initializeMap();
 
-	window.addEventListener('resize', function(e) {
-    	// map.fitBounds(mapBounds);
+    // initialize neighborhood
+    initializeNeighborhood('New York');
+
+    window.addEventListener('resize', function(e) {
+    	map.fitBounds(bounds);
     	$('#map-canvas').height($(window).height());
   	});
-
-	// http://stackoverflow.com/questions/4822852/how-to-get-the-day-of-week-and-the-month-of-the-year
-  	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-
-    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-    Date.prototype.getMonthName = function() {
-        return months[ this.getMonth() ];
-    };
-
-    Date.prototype.getDayName = function() {
-        return days[ this.getDay() ];
-    };
 
 };
 
 // initialize the MapViewModel binding
 $(function() {
+
   ko.applyBindings(new MapViewModel());
+
 
 });
