@@ -37,7 +37,7 @@ function AppViewModel() {
 	};
 
 	Date.prototype.getDayName = function() {
-    	return days[ this.getDay() ];
+		return days[ this.getDay() ];
 	};
 
   	self.computedDailyForecasts = ko.computed(function(){
@@ -101,9 +101,9 @@ function AppViewModel() {
   	self.skycons = function() {
   		var icons = new Skycons(),
           	list  = [
-          				"clear-day", "clear-night", "partly-cloudy-day",
-          				"partly-cloudy-night", "cloudy", "rain", "sleet", 
-          				"snow", "wind", "fog"
+						"clear-day", "clear-night", "partly-cloudy-day",
+						"partly-cloudy-night", "cloudy", "rain", "sleet", 
+						"snow", "wind", "fog"
           			];
 		for(var i = list.length; i--; ){
 			var weatherType = list[i],
@@ -113,12 +113,12 @@ function AppViewModel() {
 			}
 		}
 
-      	icons.play();
+		icons.play();
   	}
 	
   	ko.bindingHandlers.afterHtmlRender = {
 		update: function(el, va, ab){
-	    	ab().html && va()(ab().html);
+			ab().html && va()(ab().html);
 		}
 	}
 
@@ -170,7 +170,7 @@ function AppViewModel() {
 
     		venueMarkers[i].setMap(null);
 
-    	}
+		}
 
 		venueMarkers = [];
 	}
@@ -240,17 +240,17 @@ function AppViewModel() {
   			dataType:'jsonp',
   			success: function(data) {
   				self.topPicks(data.response.groups[0].items);
-	      		// create venues photos
-	      		var venueImgsURLlist = [];
-	      		var venueIDlist = [];
-	      		for(var i in self.topPicks()){
-	      			var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
-	      			var venueID = self.topPicks()[i].venue.id;
-	      			var venueName = self.topPicks()[i].venue.name;
-	      			var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
-	      			venueImgsURLlist.push(venueImgsURL);
-	      			venueIDlist.push(venueID);
-	      		}
+  				// create venues photos
+				var venueImgsURLlist = [];
+				var venueIDlist = [];
+				for(var i in self.topPicks()){
+					var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
+					var venueID = self.topPicks()[i].venue.id;
+					var venueName = self.topPicks()[i].venue.name;
+					var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
+					venueImgsURLlist.push(venueImgsURL);
+					venueIDlist.push(venueID);
+				}
 
 	      		function get2DArray(size) {
 				    size = size > 0 ? size : 0;
@@ -382,10 +382,10 @@ function AppViewModel() {
 							+ '</div>'  						    						    						
 							+ '</div>';
     	return	{
-					'venueName': venueName,
-					'contentString': contentString,
-					'venueID': venueID,
-					'venuePosition': venuePosition
+    				'venueName': venueName,
+    				'contentString': contentString,
+    				'venueID': venueID,
+    				'venuePosition': venuePosition
 				}
 
 	}
@@ -404,7 +404,7 @@ function AppViewModel() {
 	    	
 	    	document.getElementById(venueInfo.venueID).scrollIntoView();
 	    	var clickEvent = jQuery.Event('click');
-			clickEvent.stopPropagation();
+	    	clickEvent.stopPropagation();
 	    	$('#' + venueInfo.venueID).closest(".venue-listing-item").trigger('clickEvent');
 	    	self.selectedVenue(venueInfo.venueID);
 	    	infowindow.setContent(venueInfo.contentString);
