@@ -91,10 +91,11 @@
   padding: 10px 10px 0 0;
 }
 .fixed-container{
+  width:100%;
   position:absolute;
   z-index:100;
   top:5px;
-  margin:0 5px;
+  padding:0 5px;
 }
 .forecast-listing-box,
 .venues-listing-box{
