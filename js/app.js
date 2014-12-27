@@ -30,15 +30,15 @@ function AppViewModel() {
 
   	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 
-    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+	var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-    Date.prototype.getMonthName = function() {
-        return months[ this.getMonth() ];
-    };
+	Date.prototype.getMonthName = function() {
+		return months[ this.getMonth() ];
+	};
 
-    Date.prototype.getDayName = function() {
-        return days[ this.getDay() ];
-    };
+	Date.prototype.getDayName = function() {
+    	return days[ this.getDay() ];
+	};
 
   	self.computedDailyForecasts = ko.computed(function(){
 
@@ -101,24 +101,25 @@ function AppViewModel() {
   	self.skycons = function() {
   		var icons = new Skycons(),
           	list  = [
-            "clear-day", "clear-night", "partly-cloudy-day",
-            "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind",
-            "fog"
-          	];
-      	for(var i = list.length; i--; ){
-      		var weatherType = list[i],
-        	elements = document.getElementsByClassName( weatherType );
-		    for (e = elements.length; e--;){
-		        icons.set( elements[e], weatherType );
-		    }
-      	}
+          				"clear-day", "clear-night", "partly-cloudy-day",
+          				"partly-cloudy-night", "cloudy", "rain", "sleet", 
+          				"snow", "wind", "fog"
+          			];
+		for(var i = list.length; i--; ){
+			var weatherType = list[i],
+			elements = document.getElementsByClassName( weatherType );
+			for (e = elements.length; e--;){
+			    icons.set( elements[e], weatherType );
+			}
+		}
+
       	icons.play();
   	}
 	
   	ko.bindingHandlers.afterHtmlRender = {
-    	update: function(el, va, ab){
-        	ab().html && va()(ab().html);
-    	}
+		update: function(el, va, ab){
+	    	ab().html && va()(ab().html);
+		}
 	}
 
 	// showhide functions
@@ -158,7 +159,7 @@ function AppViewModel() {
 				self.selectedVenue(venueInfo.venueID);
 				infowindow.setContent(venueInfo.contentString);
 				infowindow.open(map, venueMarkers[i]);
-        		map.panTo(venueMarkers[i].position);
+				map.panTo(venueMarkers[i].position);
 			}
 		}
 	}
@@ -169,9 +170,9 @@ function AppViewModel() {
 
     		venueMarkers[i].setMap(null);
 
-  		}
+    	}
 
-  		venueMarkers = [];
+		venueMarkers = [];
 	}
 
 
@@ -188,23 +189,24 @@ function AppViewModel() {
 
 		var marker = new google.maps.Marker({
 			map: map,
-      		position: place.geometry.location,
-      		title: placeName,
-      		icon: blackStar
+			position: place.geometry.location,
+			title: placeName,
+			icon: blackStar
 		});
 
-    	google.maps.event.addListener(marker, 'click', function() {
-    		infowindow.setContent(placeName);
-    		infowindow.open(map, marker);
-    	});
+		google.maps.event.addListener(marker, 'click', function() {
+			infowindow.setContent(placeName);
+			infowindow.open(map, marker);
+		});
 
-    	venueMarkers.push(marker);
+		venueMarkers.push(marker);
+
 	}
 
 	// set neighborhood marker on the map 
 	// get best nearby venues from foursquare API
 	function getNeighborhoodVenues(venueData) {
-		console.log('3');
+
 		infowindow = new google.maps.InfoWindow();
 		venueLat = venueData.geometry.location.k;
 		venueLon = venueData.geometry.location.D;
@@ -218,8 +220,8 @@ function AppViewModel() {
 
 		createNeighborhoodMarker(venueData);
 
-    	// get nearby venues based on neighborhood  
-    	getFoursquareData(); 	
+		// get nearby venues based on neighborhood  
+		getFoursquareData(); 	
 
 		// get forecast data
 		getForecastData();
@@ -260,7 +262,7 @@ function AppViewModel() {
 				}
 
 				var venuesPhotos = get2DArray(venueIDlist.length);
-	      		setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
+				setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
 
 	      		// create markers
 	      		for (var i in self.topPicks()) {
@@ -270,12 +272,12 @@ function AppViewModel() {
 
 	      		// bounds
 	      		var tempBounds = data.response.suggestedBounds;
-			      if (tempBounds != undefined) {
+		      	if (tempBounds != undefined) {
 			        bounds = new google.maps.LatLngBounds(
-			          new google.maps.LatLng(tempBounds.sw.lat, tempBounds.sw.lng),
-			          new google.maps.LatLng(tempBounds.ne.lat, tempBounds.ne.lng));
+			        	new google.maps.LatLng(tempBounds.sw.lat, tempBounds.sw.lng),
+			        	new google.maps.LatLng(tempBounds.ne.lat, tempBounds.ne.lng));
 			        map.fitBounds(bounds);
-			      }
+		      	}
       		}	     		
       	});
 	}
@@ -338,16 +340,16 @@ function AppViewModel() {
 
 	function setVenueInfowindow(venue){
 		var lat = venue.location.lat;
-    	var lng = venue.location.lng;
-    	var venueName = venue.name;
-    	var venueID = venue.id;
-    	var venueCategory = venue.categories[0].name;
-    	var venuePosition = new google.maps.LatLng(lat, lng);
-    	var venueAddress = venue.location.formattedAddress;
-    	var venueContact = venue.contact.formattedPhone;
-    	var foursquareUrl = "https://foursquare.com/v/" + venue.id;
-    	var venueRating = venue.rating;
-    	var venueUrl = venue.url;
+		var lng = venue.location.lng;
+		var venueName = venue.name;
+		var venueID = venue.id;
+		var venueCategory = venue.categories[0].name;
+		var venuePosition = new google.maps.LatLng(lat, lng);
+		var venueAddress = venue.location.formattedAddress;
+		var venueContact = venue.contact.formattedPhone;
+		var foursquareUrl = "https://foursquare.com/v/" + venue.id;
+		var venueRating = venue.rating;
+		var venueUrl = venue.url;
 
     	if (!venueContact)
     		venueContact = 'Contact not available';
@@ -358,45 +360,45 @@ function AppViewModel() {
 
 
     	var contentString = '<div class="venue-infowindow">' 
-    						+ '<div class="venue-name">'
-    						+ '<a href ="' + foursquareUrl + '">'
-    						+ venueName
-    						+ '</a>'
-    						+ '<span class="venue-rating badge">'
-    						+ venueRating
-    						+ '</span>'
-    						+ '</div>'
-    						+ '<div class="venue-category"><span class="glyphicon glyphicon-tag"></span>'
-    						+ venueCategory
-    						+ '</div>'
-    						+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
-    						+ venueAddress
-    						+ '</div>'
-    						+ '<div class="venue-contact"><span class="glyphicon glyphicon-earphone"></span>'
-    						+ venueContact
-    						+ '</div>'  
-    						+ '<div class="venue-url"><span class="glyphicon glyphicon-globe"></span>'
-    						+ venueUrl
-    						+ '</div>'  						    						    						
-    						+ '</div>';
+							+ '<div class="venue-name">'
+							+ '<a href ="' + foursquareUrl + '">'
+							+ venueName
+							+ '</a>'
+							+ '<span class="venue-rating badge">'
+							+ venueRating
+							+ '</span>'
+							+ '</div>'
+							+ '<div class="venue-category"><span class="glyphicon glyphicon-tag"></span>'
+							+ venueCategory
+							+ '</div>'
+							+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
+							+ venueAddress
+							+ '</div>'
+							+ '<div class="venue-contact"><span class="glyphicon glyphicon-earphone"></span>'
+							+ venueContact
+							+ '</div>'  
+							+ '<div class="venue-url"><span class="glyphicon glyphicon-globe"></span>'
+							+ venueUrl
+							+ '</div>'  						    						    						
+							+ '</div>';
     	return	{
-    				'venueName': venueName,
-    				'contentString': contentString,
-    				'venueID': venueID,
-    				'venuePosition': venuePosition
-    			}
+					'venueName': venueName,
+					'contentString': contentString,
+					'venueID': venueID,
+					'venuePosition': venuePosition
+				}
 
 	}
 
 	function createVenueMarker(venue) {
 
 		var venueInfo = setVenueInfowindow(venue);
-	    // marker of a popular place
-	    var venueMarker = new google.maps.Marker({
-	      	map: map,
-	      	position: venueInfo.venuePosition,
-	      	title: venueInfo.venueName
-	    });
+		// marker of a popular place
+		var venueMarker = new google.maps.Marker({
+		  	map: map,
+		  	position: venueInfo.venuePosition,
+		  	title: venueInfo.venueName
+		});
 	    
 	    google.maps.event.addListener(venueMarker, 'click', function() {
 	    	
@@ -410,15 +412,16 @@ function AppViewModel() {
 	      	map.panTo(venueInfo.venuePosition);
 	    });
 
-    	venueMarkers.push(venueMarker);
+		venueMarkers.push(venueMarker);
+
 	}
 
 
 	
 	function neighborhoodVenuesCallback(results, status) {
-		console.log('2.1');
+
 	    if (status == google.maps.places.PlacesServiceStatus.OK) {
-	    	console.log('2');
+
 	      	getNeighborhoodVenues(results[0]);
 
 	    }
@@ -426,12 +429,13 @@ function AppViewModel() {
 
 
 	function getNeighborhood(neighborhood) {
+
 	    var request = {
 	      query: neighborhood
 	    };
 	    service = new google.maps.places.PlacesService(map);
 	    service.textSearch(request, neighborhoodVenuesCallback);
-	    console.log('1');
+
 	}
 
 	function initializeNeighborhood(neighborhood){
@@ -463,7 +467,7 @@ function AppViewModel() {
 // initialize AppViewModel 
 $(function() {
 
-  ko.applyBindings(new AppViewModel());
+	ko.applyBindings(new AppViewModel());
 
 
 });
