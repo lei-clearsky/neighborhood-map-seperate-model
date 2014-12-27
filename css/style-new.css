@@ -331,7 +331,10 @@
 
 }
 
-@media only screen and (max-width : 350px) {
+@media only screen and (max-width : 320px) {
+  .venues-listing-box{
+    max-width: 310px;
+  }
   
   .venue-listing-item .left{
     width:60%;
