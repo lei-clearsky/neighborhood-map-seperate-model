@@ -351,15 +351,15 @@ function AppViewModel() {
 		var venueRating = venue.rating;
 		var venueUrl = venue.url;
 
-    	if (!venueContact)
-    		venueContact = 'Contact not available';
+		if (!venueContact)
+			venueContact = 'Contact not available';
 		if (!venueUrl)
-    		venueUrl = 'Website not available';
-    	if (!venueRating)
-    		venueRating = '0.0';
+			venueUrl = 'Website not available';
+		if (!venueRating)
+			venueRating = '0.0';
 
 
-    	var contentString = '<div class="venue-infowindow">' 
+		var contentString = '<div class="venue-infowindow">' 
 							+ '<div class="venue-name">'
 							+ '<a href ="' + foursquareUrl + '">'
 							+ venueName
@@ -381,11 +381,11 @@ function AppViewModel() {
 							+ venueUrl
 							+ '</div>'  						    						    						
 							+ '</div>';
-    	return	{
-    				'venueName': venueName,
-    				'contentString': contentString,
-    				'venueID': venueID,
-    				'venuePosition': venuePosition
+		return	{
+					'venueName': venueName,
+					'contentString': contentString,
+					'venueID': venueID,
+					'venuePosition': venuePosition
 				}
 
 	}
@@ -400,17 +400,17 @@ function AppViewModel() {
 		  	title: venueInfo.venueName
 		});
 	    
-	    google.maps.event.addListener(venueMarker, 'click', function() {
+		google.maps.event.addListener(venueMarker, 'click', function() {
 	    	
-	    	document.getElementById(venueInfo.venueID).scrollIntoView();
-	    	var clickEvent = jQuery.Event('click');
-	    	clickEvent.stopPropagation();
-	    	$('#' + venueInfo.venueID).closest(".venue-listing-item").trigger('clickEvent');
-	    	self.selectedVenue(venueInfo.venueID);
-	    	infowindow.setContent(venueInfo.contentString);
-	      	infowindow.open(map, venueMarker);
-	      	map.panTo(venueInfo.venuePosition);
-	    });
+			document.getElementById(venueInfo.venueID).scrollIntoView();
+			var clickEvent = jQuery.Event('click');
+			clickEvent.stopPropagation();
+			$('#' + venueInfo.venueID).closest(".venue-listing-item").trigger('clickEvent');
+			self.selectedVenue(venueInfo.venueID);
+			infowindow.setContent(venueInfo.contentString);
+			infowindow.open(map, venueMarker);
+			map.panTo(venueInfo.venuePosition);
+		});
 
 		venueMarkers.push(venueMarker);
 
@@ -430,11 +430,12 @@ function AppViewModel() {
 
 	function getNeighborhood(neighborhood) {
 
-	    var request = {
-	      query: neighborhood
-	    };
-	    service = new google.maps.places.PlacesService(map);
-	    service.textSearch(request, neighborhoodVenuesCallback);
+		var request = {
+			query: neighborhood
+		};
+
+		service = new google.maps.places.PlacesService(map);
+		service.textSearch(request, neighborhoodVenuesCallback);
 
 	}
 
@@ -448,17 +449,22 @@ function AppViewModel() {
 			zoom: 15,
 			disableDefaultUI: true
 		};
+
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+		
 		$('#map-canvas').height($(window).height());
 	};
 
+	// initialize map
 	initializeMap();
 
     // initialize neighborhood
     initializeNeighborhood('New York');
 
     window.addEventListener('resize', function(e) {
+    	
     	map.fitBounds(bounds);
+    	
     	$('#map-canvas').height($(window).height());
   	});
 
