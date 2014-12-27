@@ -28,7 +28,6 @@ function AppViewModel() {
 	self.photosAPIurl = ko.observableArray('');
 	self.selectedVenue = ko.observable('');
 
-	// http://stackoverflow.com/questions/4822852/how-to-get-the-day-of-week-and-the-month-of-the-year
   	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 
     var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -41,7 +40,6 @@ function AppViewModel() {
         return days[ this.getDay() ];
     };
 
-  	// http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
   	self.computedDailyForecasts = ko.computed(function(){
 
   		var newDailyForecasts = self.dailyForecasts();
@@ -100,7 +98,6 @@ function AppViewModel() {
   		return tempTopPicks;
   	});
 
-	// http://stackoverflow.com/questions/24572100/skycons-cant-display-the-same-icon-twice
   	self.skycons = function() {
   		var icons = new Skycons(),
           	list  = [
@@ -117,8 +114,7 @@ function AppViewModel() {
       	}
       	icons.play();
   	}
-
-  	// http://stackoverflow.com/questions/16250594/afterrender-for-html-binding 	
+	
   	ko.bindingHandlers.afterHtmlRender = {
     	update: function(el, va, ab){
         	ab().html && va()(ab().html);
@@ -139,16 +135,6 @@ function AppViewModel() {
 		self.displayVenuesList(!self.displayVenuesList());
 	}
 
-/*
-	self.computedNeighborhood = ko.computed(function() {
-		if (self.neighborhood() != '') {
-			if (venueMarkers.length > 0)
-				removeVenueMarkers();
-
-			getNeighborhood(self.neighborhood());
-		}	
-	});
-*/
 
 	self.computedNeighborhood = function() {
 		if (self.neighborhood() != '') {
@@ -321,7 +307,7 @@ function AppViewModel() {
       		})(i);
 
       		var venueIDphotos = '#' + venueIDlist[i];
-      		// http://stackoverflow.com/questions/48239/getting-the-id-of-the-element-that-fired-an-event-using-jquery
+      		
   			$(venueIDphotos).click(function( e ) {
   				e.preventDefault();
   				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
@@ -332,7 +318,7 @@ function AppViewModel() {
 
 
 	function getForecastData() {
-		// http://stackoverflow.com/questions/16050652/how-do-i-assign-a-json-response-from-this-api-im-using-to-elements-on-my-page
+		
       	var forecastBaseURL = 'https://api.forecast.io/forecast/';
 		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
 		var formattedLL = '/'+ currentLat + ',' + currentLon;
@@ -371,7 +357,6 @@ function AppViewModel() {
     		venueRating = '0.0';
 
 
-    	// https://developers.google.com/maps/documentation/javascript/infowindows
     	var contentString = '<div class="venue-infowindow">' 
     						+ '<div class="venue-name">'
     						+ '<a href ="' + foursquareUrl + '">'
@@ -414,7 +399,7 @@ function AppViewModel() {
 	    });
 	    
 	    google.maps.event.addListener(venueMarker, 'click', function() {
-	    	// http://stackoverflow.com/questions/4884839/how-do-i-get-a-element-to-scroll-into-view-using-jquery
+	    	
 	    	document.getElementById(venueInfo.venueID).scrollIntoView();
 	    	var clickEvent = jQuery.Event('click');
 			clickEvent.stopPropagation();
@@ -429,7 +414,7 @@ function AppViewModel() {
 	}
 
 
-	// callback method for neighborhood location
+	
 	function neighborhoodVenuesCallback(results, status) {
 		console.log('2.1');
 	    if (status == google.maps.places.PlacesServiceStatus.OK) {
@@ -453,7 +438,7 @@ function AppViewModel() {
 		getNeighborhood(neighborhood);
 	}
 
-	// function that initializes the map
+	// initializes the map
 	function initializeMap() {
 		mapOptions = {
 			zoom: 15,
@@ -475,7 +460,7 @@ function AppViewModel() {
 
 };
 
-// initialize the MapViewModel binding
+// initialize AppViewModel 
 $(function() {
 
   ko.applyBindings(new AppViewModel());
