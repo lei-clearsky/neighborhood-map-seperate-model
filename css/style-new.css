@@ -331,6 +331,30 @@
 
 }
 
+@media only screen and (max-width : 320px) {
+  
+  .venue-listing-item .left{
+    width:60%;
+  }
+  .venue-listing-item .left{
+    width:40%;
+  }
+  .forecast-listing-item .middle .day-icon{
+    display:none;
+  }
+  .venue-listing-item .left .venue-sub .venue-address{
+    width:60%;
+  }
+
+  .venue-listing-item .content{
+    word-wrap: break-word;
+    width:80%;
+  }
+
+}
+
+
+
 /* Medium Devices, Desktops 
 @media only screen and (min-width : 992px) {
   
