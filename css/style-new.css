@@ -331,7 +331,7 @@
 
 }
 
-@media only screen and (max-width : 320px) {
+@media only screen and (max-width : 350px) {
   
   .venue-listing-item .left{
     width:60%;
