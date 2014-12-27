@@ -287,7 +287,7 @@
 @media only screen and (max-width : 768px) {
 
   .search-button{
-    display:none;
+    display:block;
   }
 
   .form-group{
