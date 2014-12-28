@@ -91,7 +91,7 @@
   padding: 10px 10px 0 0;
 }
 .fixed-container{
-  width:100%;
+  width:520px;
   position:absolute;
   z-index:100;
   top:5px;
@@ -333,6 +333,9 @@
 }
 
 @media only screen and (max-width : 320px) {
+  .fixed-container{
+    width:100%;
+  }
   .venues-listing-box{
     max-width: 310px;
   }
