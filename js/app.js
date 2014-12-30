@@ -11,7 +11,7 @@ function AppViewModel() {
 	var bounds;
 	var service;
 	var marker;
-	var infoWindow;
+	var infowindow;
 	var defaultExploreKeyword = 'best nearby';
 	var defaultNeighborhood = 'new york';
 	var newNeighborhood;
@@ -27,6 +27,27 @@ function AppViewModel() {
 	self.currentlySkyicon = ko.observable('');
 	self.photosAPIurl = ko.observableArray('');
 	self.selectedVenue = ko.observable('');
+	self.chosenMarker = ko.observable();
+
+	/*
+
+	var redDot = new google.maps.MarkerImage(
+    	"http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+    	null, 
+    	null, 
+    	null, 
+    	new google.maps.Size(42, 68)
+	);
+
+	var blueDot = new google.maps.MarkerImage(
+    	"http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+    	null, 
+    	null, 
+    	null, 
+    	new google.maps.Size(42, 68)
+	);
+
+	*/
 
   	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 
@@ -155,11 +176,14 @@ function AppViewModel() {
 
 		for (var i in venueMarkers) {
 			if (venueMarkers[i].title === venueInfo.venueName) {
+				self.chosenMarker(venueMarkers[i]);
 				// google.maps.event.trigger(venueMarkers[i], 'click');
 				self.selectedVenue(venueInfo.venueID);
+				// venueMarker[i].setIcon(blueDot);
 				infowindow.setContent(venueInfo.contentString);
 				infowindow.open(map, venueMarkers[i]);
 				map.panTo(venueMarkers[i].position);
+				selectedMarkerBounce(venueMarkers[i]);
 			}
 		}
 	}
@@ -225,6 +249,10 @@ function AppViewModel() {
 
 		// get forecast data
 		getForecastData();
+
+		google.maps.event.addListener(infowindow, 'closeclick', function() {  
+    		self.chosenMarker().setAnimation(null); 
+		});
 
 	};
 
@@ -409,6 +437,8 @@ function AppViewModel() {
 			self.selectedVenue(venueInfo.venueID);
 			infowindow.setContent(venueInfo.contentString);
 			infowindow.open(map, venueMarker);
+			//venueMarker.setIcon(blueDot);
+			selectedMarkerBounce(venueMarker);
 			map.panTo(venueInfo.venuePosition);
 		});
 
@@ -416,6 +446,15 @@ function AppViewModel() {
 
 	}
 
+	function selectedMarkerBounce(venueMarker){
+		self.chosenMarker(venueMarker);
+		venueMarkers.forEach(function(marker){
+			marker.setAnimation(null);
+		});
+		venueMarker.setAnimation(google.maps.Animation.BOUNCE);
+	}
+
+	
 
 	
 	function neighborhoodVenuesCallback(results, status) {
