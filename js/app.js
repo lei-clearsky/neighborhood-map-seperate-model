@@ -447,11 +447,13 @@ function AppViewModel() {
 	}
 
 	function selectedMarkerBounce(venueMarker){
-		self.chosenMarker(venueMarker);
-		venueMarkers.forEach(function(marker){
-			marker.setAnimation(null);
-		});
-		venueMarker.setAnimation(google.maps.Animation.BOUNCE);
+		if (venueMarker.getAnimation() == null){
+			self.chosenMarker(venueMarker);
+			venueMarkers.forEach(function(marker){
+				marker.setAnimation(null);
+			});
+			venueMarker.setAnimation(google.maps.Animation.BOUNCE);
+		}
 	}
 
 	
