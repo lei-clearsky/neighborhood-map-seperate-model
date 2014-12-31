@@ -1,82 +1,76 @@
+/**
+ * @fileoverview View Model for neighborhood map application
+ * @author sportzhulei@gmail.com (Lei Zhu)
+ */
+
 function AppViewModel() {
 
 	var self = this;
-	var map; 
-	var mapOptions;
+	var map,
+		mapOptions,
+		placeLat,
+		placeLon,
+		venueName,
+		bounds,
+		service,
+		marker,
+		newNeighborhood,
+		infowindow;
+
 	var venueMarkers = [];
-	var VenuesOnList = [];
-	var venueLat;
-	var venueLon;
-	var venueName;
-	var bounds;
-	var service;
-	var marker;
-	var infowindow;
 	var defaultExploreKeyword = 'best nearby';
 	var defaultNeighborhood = 'new york';
-	var newNeighborhood;
-	var currentLat;
-	var currentLon;
-
-	self.exploreKeyword = ko.observable('');
-	self.neighborhood = ko.observable(defaultNeighborhood);
-	self.formattedAddress = ko.observable('');
-	self.topPicks = ko.observableArray('');
-	self.dailyForecasts = ko.observableArray('');
-	self.currentlyForecasts = ko.observable('');
-	self.currentlySkyicon = ko.observable('');
-	self.photosAPIurl = ko.observableArray('');
-	self.selectedVenue = ko.observable('');
-	self.chosenMarker = ko.observable();
-
-	/*
-
-	var redDot = new google.maps.MarkerImage(
-    	"http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-    	null, 
-    	null, 
-    	null, 
-    	new google.maps.Size(42, 68)
-	);
-
-	var blueDot = new google.maps.MarkerImage(
-    	"http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-    	null, 
-    	null, 
-    	null, 
-    	new google.maps.Size(42, 68)
-	);
-
-	*/
-
-  	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
-
+	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 	var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+	self.exploreKeyword = ko.observable(''); // explore neighborhood keywords
+	self.neighborhood = ko.observable(defaultNeighborhood);	// neighborhood location
+	self.formattedAddress = ko.observable('');	// formatted neighborhood location address
+	self.topPicks = ko.observableArray('');	// most popular foursquare picks depending on neighborhood keywords and location
+	self.dailyForecasts = ko.observableArray(''); // one week daily forecasts depeding on neighborhood location
+	self.currentlyForecasts = ko.observable(''); // current weather forecast
+	self.currentlySkyicon = ko.observable(''); // current weather skycon
+	self.photosAPIurl = ko.observableArray(''); // foursquare photos urls
+	self.selectedVenue = ko.observable(''); // selected venue info
+	self.chosenMarker = ko.observable(''); // selected marker info
+	self.displayForecastsList = ko.observable('false'); // boolean value for forecast list display
+	self.displayVenuesList = ko.observable('false'); // boolean value fore venues list display
+
+	/**
+ 	 * Get month name according to javascript getMonth() method return value
+ 	 * @return {string}
+ 	 */
 	Date.prototype.getMonthName = function() {
 		return months[ this.getMonth() ];
 	};
 
+	/**
+ 	 * Get day name according to javascript getDay() method return value
+ 	 * @return {string}
+ 	 */
 	Date.prototype.getDayName = function() {
 		return days[ this.getDay() ];
 	};
 
+	// format and return one week daily forecasts data 
   	self.computedDailyForecasts = ko.computed(function(){
 
-  		var newDailyForecasts = self.dailyForecasts();
-  		for (var i in newDailyForecasts) {
-  			var date = new Date(newDailyForecasts[i].time * 1000);
+  		var tempDailyForecasts = self.dailyForecasts();
+  		for (var i in tempDailyForecasts) {
+  			var date = new Date(tempDailyForecasts[i].time * 1000);
   			// var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
   			// var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
   			var formatedTime = date.getDayName();
 
-  			newDailyForecasts[i]['formatedTime'] = formatedTime;
+  			tempDailyForecasts[i]['formatedTime'] = formatedTime;
   		}
 
-  		return newDailyForecasts;
+  		return tempDailyForecasts;
   	});
 
-  	self.computedTopPicks = ko.computed(function(){
+  	// format and return most popular venues data 
+  	// error handlings if no data is found
+  	self.computedTopPicks = ko.computed(function() {
   		var tempTopPicks = self.topPicks();
 
   		for (var i in tempTopPicks) {
@@ -84,25 +78,25 @@ function AppViewModel() {
   			var photoPrefix = 'https://irs0.4sqi.net/img/general/';
   			var photoFullURL = 'http://placehold.it/100x100';
 
-  			if (!tempTopPicks[i].venue.contact.formattedPhone){
+  			if (!tempTopPicks[i].venue.contact.formattedPhone) {
   				tempTopPicks[i].formatedContact = 'No contact available';
   			}else{
   				tempTopPicks[i].formatedContact = tempTopPicks[i].venue.contact.formattedPhone;
   			}
 
-  			if (!tempTopPicks[i].tips){
+  			if (!tempTopPicks[i].tips) {
   				tempTopPicks[i].formatedTip = 'No reviews available';
   			}else{
   				tempTopPicks[i].formatedTip = tempTopPicks[i].tips[0].text;
   			}
 
-  			if (!tempTopPicks[i].venue.url){
+  			if (!tempTopPicks[i].venue.url) {
   				tempTopPicks[i].formatedUrl = 'No website available';
   			}else{
   				tempTopPicks[i].formatedUrl = tempTopPicks[i].venue.url;
   			}
 
-  			if (!tempTopPicks[i].venue.rating){
+  			if (!tempTopPicks[i].venue.rating) {
   				tempTopPicks[i].venue.formatedRating = '0.0';
   			}else{
   				tempTopPicks[i].venue.formatedRating = tempTopPicks[i].venue.rating;
@@ -119,17 +113,16 @@ function AppViewModel() {
   		return tempTopPicks;
   	});
 
+	// setup and initialize skycons canvas display
   	self.skycons = function() {
   		var icons = new Skycons(),
-          	list  = [
-						"clear-day", "clear-night", "partly-cloudy-day",
-						"partly-cloudy-night", "cloudy", "rain", "sleet", 
-						"snow", "wind", "fog"
-          			];
-		for(var i = list.length; i--; ){
+          	list  = ["clear-day", "clear-night", "partly-cloudy-day", "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind", "fog"];
+		
+		for(var i = list.length; i--; ) {
 			var weatherType = list[i],
 			elements = document.getElementsByClassName( weatherType );
-			for (e = elements.length; e--;){
+
+			for (e = elements.length; e--;) {
 			    icons.set( elements[e], weatherType );
 			}
 		}
@@ -137,27 +130,27 @@ function AppViewModel() {
 		icons.play();
   	}
 	
+	// custom binding handler that tracks html binding changes 
+	// and fires callback when value is updated
+	// reference: http://stackoverflow.com/questions/16250594/afterrender-for-html-binding
   	ko.bindingHandlers.afterHtmlRender = {
-		update: function(el, va, ab){
+		update: function(el, va, ab) {
 			ab().html && va()(ab().html);
 		}
 	}
 
-	// showhide functions
-	// display neighborhood info
-	self.displayForecastsList = ko.observable('false');
-
-	// update venues on the list display
-	self.displayVenuesList = ko.observable('false');
-
-	self.updateFObservable = function(){
+	// update function for forecasts list display
+	self.updateFObservable = function() {
 		self.displayForecastsList(!self.displayForecastsList());
 	}
-	self.updateVObservable = function(){
+
+	// update function for venues list display
+	self.updateVObservable = function() {
 		self.displayVenuesList(!self.displayVenuesList());
 	}
 
-
+	// takes user's input in neighborhood address
+	// update displays for map, weather forecasts and popular venues
 	self.computedNeighborhood = function() {
 		if (self.neighborhood() != '') {
 			if (venueMarkers.length > 0)
@@ -166,20 +159,28 @@ function AppViewModel() {
 		}	
 	};
 
+	// when user update neighborhood address in input bar,
+	// update displays for map, weather forecasts and popular venues
 	self.neighborhood.subscribe(self.computedNeighborhood);	
 
+	// when user update explore keyword in input bar,
+	// update displays for map, weather forecasts and popular venues
 	self.exploreKeyword.subscribe(self.computedNeighborhood);
 
-
+	/**
+ 	 * When venue item is clicked in venues listing,
+ 	 * panto the venue marker on map, display infowindow, 
+ 	 * start marker bounce animation
+ 	 * @param {Object} venue A clicked venue object in venues list
+ 	 * @return {void}
+ 	 */ 
 	self.panToMarker = function(venue) {
 		var venueInfo = setVenueInfowindow(venue.venue);
 
 		for (var i in venueMarkers) {
 			if (venueMarkers[i].title === venueInfo.venueName) {
 				self.chosenMarker(venueMarkers[i]);
-				// google.maps.event.trigger(venueMarkers[i], 'click');
 				self.selectedVenue(venueInfo.venueID);
-				// venueMarker[i].setIcon(blueDot);
 				infowindow.setContent(venueInfo.contentString);
 				infowindow.open(map, venueMarkers[i]);
 				map.panTo(venueMarkers[i].position);
@@ -188,7 +189,8 @@ function AppViewModel() {
 		}
 	}
 
-
+	// empty venuMarkers array, remove all venue markers on map
+	// this function gets called once neighborhood keywords or address is updated
 	function removeVenueMarkers() {
 	    for (var i = 0; i < venueMarkers.length; i++) {
 
@@ -199,7 +201,12 @@ function AppViewModel() {
 		venueMarkers = [];
 	}
 
-
+	/**
+ 	 * Create a neighborhood marker in a shape of start in black color
+ 	 * for neighborhood address user input in the address input bar
+ 	 * @param {Object} place A place object returned by Google Map place callback
+ 	 * @return {void}
+ 	 */ 
 	function createNeighborhoodMarker(place) {
 
 		var placeName = place.name;
@@ -223,44 +230,55 @@ function AppViewModel() {
 			infowindow.open(map, marker);
 		});
 
-		venueMarkers.push(marker);
+		venueMarkers.push(marker); // push this marker to venueMarker array
 
 	}
 
-	// set neighborhood marker on the map 
-	// get best nearby venues from foursquare API
-	function getNeighborhoodVenues(venueData) {
-
+	/**
+ 	 * Get best nearby neighborhood venues data from foursquare API,
+ 	 * get forecasts data from forecast.io API
+ 	 * create venues markers on map
+ 	 * @param {Object} place A place object returned by Google Map place callback
+ 	 * @return {void}
+ 	 */
+	function getNeighborhoodVenues(place) {
 		infowindow = new google.maps.InfoWindow();
-		venueLat = venueData.geometry.location.k;
-		venueLon = venueData.geometry.location.D;
-		currentLat = venueLat;
-		currentLon = venueLon;
-		venueName = venueData.name;
-		var formattedVenueAddress = venueData.formatted_address; 
+		placeLat = place.geometry.location.k;
+		placeLon = place.geometry.location.D;
+		venueName = place.name;
+		var formattedVenueAddress = place.formatted_address; 
 		self.formattedAddress(formattedVenueAddress);
-		newNeighborhood = new google.maps.LatLng(venueLat, venueLon);
+		newNeighborhood = new google.maps.LatLng(placeLat, placeLon);
 		map.setCenter(newNeighborhood);
 
-		createNeighborhoodMarker(venueData);
+		// create one marker for neighborhood address user input
+		createNeighborhoodMarker(place);
 
-		// get nearby venues based on neighborhood  
+		// get nearby venues based on explore keywords and neighborhood address
 		getFoursquareData(); 	
 
 		// get forecast data
 		getForecastData();
 
+		// disable marker animation when infowindow is closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {  
     		self.chosenMarker().setAnimation(null); 
 		});
 
 	};
 
-
+	/**
+ 	 * Get best nearby neighborhood venues data from foursquare API,
+ 	 * retrieve foursquare venue photos
+ 	 * create 2D array to store foursquare venue photos data
+ 	 * set venue photos groups for swipebox lightbox display
+ 	 * create venues markers on map
+ 	 * @return {void}
+ 	 */
 	function getFoursquareData() {
 		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
-  		var neighborhoodLL = '&ll=' + venueLat + ',' + venueLon;
+  		var neighborhoodLL = '&ll=' + placeLat + ',' + placeLon;
   		var query = '&query=' + self.exploreKeyword();
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
   		$.ajax({
@@ -268,10 +286,11 @@ function AppViewModel() {
   			dataType:'jsonp',
   			success: function(data) {
   				self.topPicks(data.response.groups[0].items);
-  				// create venues photos
-				var venueImgsURLlist = [];
-				var venueIDlist = [];
-				for(var i in self.topPicks()){
+				var venueImgsURLlist = []; // keep a list of all venues photo urls
+				var venueIDlist = []; // keep a list of all venues ID
+
+				// retrieve and set venue photo url to get photos for each venue
+				for(var i in self.topPicks()) {
 					var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
 					var venueID = self.topPicks()[i].venue.id;
 					var venueName = self.topPicks()[i].venue.name;
@@ -280,6 +299,7 @@ function AppViewModel() {
 					venueIDlist.push(venueID);
 				}
 
+				// create empty 2D array to store foursquare venue photos data 
 	      		function get2DArray(size) {
 				    size = size > 0 ? size : 0;
 				    var arr = [];
@@ -290,15 +310,17 @@ function AppViewModel() {
 				}
 
 				var venuesPhotos = get2DArray(venueIDlist.length);
+
+				// set venue photos groups for swipebox lightbox display
 				setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
 
-	      		// create markers
+	      		// create venue markers
 	      		for (var i in self.topPicks()) {
 
 	        		createVenueMarker(self.topPicks()[i].venue);
 	      		}
 
-	      		// bounds
+	      		// set bounds according to suggestedBounds from foursquare data resonse
 	      		var tempBounds = data.response.suggestedBounds;
 		      	if (tempBounds != undefined) {
 			        bounds = new google.maps.LatLngBounds(
@@ -310,20 +332,30 @@ function AppViewModel() {
       	});
 	}
 
+	/**
+ 	 * set venue photos groups for swipebox lightbox display
+ 	 * create venues markers on map
+ 	 * @param {Array.<Object>} venuesPhotos A Empty 2D array to keep track of venue photos data
+ 	 * @param {Array.<Object>} venueIDlist An array to keep a list of all venues IDs
+ 	 * @param {Array.<Object>} venueImgsURLlist A array to keep a list of all venues photo urls
+ 	 * @return {void}
+ 	 */
+	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist) {
 
-	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist){
-		var baseImgURL = 'https://irs3.4sqi.net/img/general/';
+		var baseImgURL = 'https://irs3.4sqi.net/img/general/'; // base url to retrieve venue photos
 
-		for (var i in venueImgsURLlist){
+		// store venue photos data in 2D array
+		// use closure to keep i index in venuePhotos 2D array
+		for (var i in venueImgsURLlist) {
 			(function(i){
       			$.ajax({
       				url: venueImgsURLlist[i],
       				dataType: 'jsonp',
-      				success: function(data){
+      				success: function(data) {
 
       					var imgItems = data.response.photos.items;
 
-      					for (var j in imgItems){
+      					for (var j in imgItems) {
       						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
       						var venueImgObj = {
       							href: venueImgURL,
@@ -338,6 +370,7 @@ function AppViewModel() {
 
       		var venueIDphotos = '#' + venueIDlist[i];
       		
+      		// setup swipebox photo groups click function
   			$(venueIDphotos).click(function( e ) {
   				e.preventDefault();
   				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
@@ -346,18 +379,19 @@ function AppViewModel() {
 		}
 	}
 
-
+	// get forecasts data from forecast.io API ajax call
+	// use jsonp data type to avoid cross domain error
 	function getForecastData() {
 		
       	var forecastBaseURL = 'https://api.forecast.io/forecast/';
 		var forecastAPIkey = '96556a5d8a419fc71902643785e74d30';
-		var formattedLL = '/'+ currentLat + ',' + currentLon;
+		var formattedLL = '/'+ placeLat + ',' + placeLon;
 		var forecastURL = forecastBaseURL + forecastAPIkey + formattedLL;
 
 		$.ajax({
 			url: forecastURL,
 			dataType: 'jsonp',
-			success: function(data){
+			success: function(data) {
 				self.dailyForecasts(data.daily.data);
 				self.currentlyForecasts(data.currently);
 				self.currentlySkyicon(data.currently.icon);
@@ -365,8 +399,13 @@ function AppViewModel() {
 		});
 	}
 
-
-	function setVenueInfowindow(venue){
+	/**
+ 	 * set a venue's marker infowindow
+ 	 * error handlings if no data is found
+	 * @param {Object} venue A venue object 
+ 	 * @return {void}
+ 	 */
+	function setVenueInfowindow(venue) {
 		var lat = venue.location.lat;
 		var lng = venue.location.lng;
 		var venueName = venue.name;
@@ -418,10 +457,19 @@ function AppViewModel() {
 
 	}
 
+	/**
+ 	 * create a venue marker on map
+ 	 * when this venue marker is clicked on map, 
+ 	 * open marker infowindow, set marker bounce animation
+ 	 * scroll to this venue item on venues list,
+ 	 * panto this marker on map
+	 * @param {Object} venue A venue object 
+ 	 * @return {void}
+ 	 */
 	function createVenueMarker(venue) {
 
 		var venueInfo = setVenueInfowindow(venue);
-		// marker of a popular place
+
 		var venueMarker = new google.maps.Marker({
 		  	map: map,
 		  	position: venueInfo.venuePosition,
@@ -437,7 +485,6 @@ function AppViewModel() {
 			self.selectedVenue(venueInfo.venueID);
 			infowindow.setContent(venueInfo.contentString);
 			infowindow.open(map, venueMarker);
-			//venueMarker.setIcon(blueDot);
 			selectedMarkerBounce(venueMarker);
 			map.panTo(venueInfo.venuePosition);
 		});
@@ -446,20 +493,26 @@ function AppViewModel() {
 
 	}
 
-	function selectedMarkerBounce(venueMarker){
-		if (venueMarker.getAnimation() == null){
+	/**
+ 	 * if this marker has no animation, disable other marker's animation
+ 	 * set this marker's animation to bounce
+	 * @param {Object} venueMarker A venue marker object 
+ 	 * @return {void}
+ 	 */
+	function selectedMarkerBounce(venueMarker) {
+		if (venueMarker.getAnimation() == null) {
 			self.chosenMarker(venueMarker);
-			venueMarkers.forEach(function(marker){
+			venueMarkers.forEach(function(marker) {
 				marker.setAnimation(null);
 			});
+			
 			venueMarker.setAnimation(google.maps.Animation.BOUNCE);
 		}
 	}
 
-	
-
-	
-	function neighborhoodVenuesCallback(results, status) {
+	// callback(results, status) makes sure the search returned results for a location.
+	// if so, get and update neighborhood venues 
+	function getNeighborhoodCallback(results, status) {
 
 	    if (status == google.maps.places.PlacesServiceStatus.OK) {
 
@@ -468,23 +521,35 @@ function AppViewModel() {
 	    }
 	}
 
-
+	/**
+ 	 * get neighborhood data for the app
+ 	 * this function gets called when explore keywords or 
+ 	 * neighborhood location gets updates
+	 * @param {string} neighborhood A neighborhood location retrieved from user input
+ 	 * @return {void}
+ 	 */
 	function getNeighborhood(neighborhood) {
 
+		// the search request object
 		var request = {
 			query: neighborhood
 		};
 
+		// creates a Google place search service object. 
+		// PlacesService does the work of searching for location data.
 		service = new google.maps.places.PlacesService(map);
-		service.textSearch(request, neighborhoodVenuesCallback);
+		// searches the Google Maps API for location data and runs the callback 
+      	// function with the search results after each search.
+		service.textSearch(request, getNeighborhoodCallback);
 
 	}
 
-	function initializeNeighborhood(neighborhood){
+	// initliaze neighborhood data when application is load
+	function initializeNeighborhood(neighborhood) {
 		getNeighborhood(neighborhood);
 	}
 
-	// initializes the map
+	// function that initializes the application map
 	function initializeMap() {
 		mapOptions = {
 			zoom: 15,
@@ -499,15 +564,16 @@ function AppViewModel() {
 	// initialize map
 	initializeMap();
 
-    // initialize neighborhood
-    initializeNeighborhood('New York');
+	// initialize neighborhood
+	initializeNeighborhood(defaultNeighborhood);
 
-    window.addEventListener('resize', function(e) {
+	// the map bounds is updated when page resizes
+	window.addEventListener('resize', function(e) {
     	
-    	map.fitBounds(bounds);
+		map.fitBounds(bounds);
     	
-    	$('#map-canvas').height($(window).height());
-  	});
+		$('#map-canvas').height($(window).height());
+	});
 
 };
 
