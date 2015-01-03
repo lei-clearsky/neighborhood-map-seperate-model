@@ -3,21 +3,113 @@
  * @author sportzhulei@gmail.com (Lei Zhu)
  */
 
+
+var Neighborhood = function(data) {
+	this.placeLat;
+	this.placeLon;
+	this.formatedAddress;
+	this.topPicks = [];
+	this.venueMarkers = [];
+	this.currentlyForecast = ko.observable('');
+	this.currentlySkyicon = ko.observable('');
+	this.dailyForecasts = ko.observableArray([]);
+	this.selectedVenue = ko.observable('');
+	this.chosenMarker = ko.observable('');
+
+	// format and return one week daily forecasts data 
+	this.computedDailyForecasts = ko.computed(function(){
+
+  		var tempDailyForecasts = self.dailyForecasts();
+  		for (var i in tempDailyForecasts) {
+  			var date = new Date(tempDailyForecasts[i].time * 1000);
+  			// var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
+  			// var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
+  			var formatedTime = date.getDayName();
+
+  			tempDailyForecasts[i]['formatedTime'] = formatedTime;
+  		}
+
+  		return tempDailyForecasts;
+  	});
+
+  	// format and return most popular venues data 
+  	// error handlings if no data is found
+  	this.computedTopPicks = ko.computed(function() {
+  		var tempTopPicks = self.topPicks();
+
+  		for (var i in tempTopPicks) {
+
+  			var photoPrefix = 'https://irs0.4sqi.net/img/general/';
+  			var photoFullURL = 'http://placehold.it/100x100';
+
+  			if (!tempTopPicks[i].venue.contact.formattedPhone) {
+  				tempTopPicks[i].formatedContact = 'No contact available';
+  			}else{
+  				tempTopPicks[i].formatedContact = tempTopPicks[i].venue.contact.formattedPhone;
+  			}
+
+  			if (!tempTopPicks[i].tips) {
+  				tempTopPicks[i].formatedTip = 'No reviews available';
+  			}else{
+  				tempTopPicks[i].formatedTip = tempTopPicks[i].tips[0].text;
+  			}
+
+  			if (!tempTopPicks[i].venue.url) {
+  				tempTopPicks[i].formatedUrl = 'No website available';
+  			}else{
+  				tempTopPicks[i].formatedUrl = tempTopPicks[i].venue.url;
+  			}
+
+  			if (!tempTopPicks[i].venue.rating) {
+  				tempTopPicks[i].venue.formatedRating = '0.0';
+  			}else{
+  				tempTopPicks[i].venue.formatedRating = tempTopPicks[i].venue.rating;
+  			}
+
+  			if (tempTopPicks[i].venue.featuredPhotos){
+  				var photoSuffix = tempTopPicks[i].venue.featuredPhotos.items[0].suffix;
+  				photoFullURL = photoPrefix + 'width100' + photoSuffix;
+  			}
+ 						
+  			tempTopPicks[i]['photoFullURL'] = photoFullURL;
+
+  		}
+  		return tempTopPicks;
+  	});
+
+
+}
+
+var Venue = function() {
+	this.venueLat;
+	this.venueLon;
+	this.name;
+}
+
+var Marker = function() {
+
+}
+
+var Forecast = function() {
+
+}
+
+
 function AppViewModel() {
 
 	var self = this;
 	var map,
 		mapOptions,
-		placeLat,
-		placeLon,
-		venueName,
+		//placeLat,
+		//placeLon,
+		//venueName,
 		bounds,
 		service,
 		marker,
-		newNeighborhood,
+		//newNeighborhood,
 		infowindow;
 
-	var venueMarkers = [];
+	//var venueMarkers = [];
 	var defaultExploreKeyword = 'best nearby';
 	var defaultNeighborhood = 'new york';
 	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
@@ -25,14 +117,14 @@ function AppViewModel() {
 
 	self.exploreKeyword = ko.observable(''); // explore neighborhood keywords
 	self.neighborhood = ko.observable(defaultNeighborhood);	// neighborhood location
-	self.formattedAddress = ko.observable('');	// formatted neighborhood location address
-	self.topPicks = ko.observableArray('');	// most popular foursquare picks depending on neighborhood keywords and location
-	self.dailyForecasts = ko.observableArray(''); // one week daily forecasts depeding on neighborhood location
-	self.currentlyForecasts = ko.observable(''); // current weather forecast
-	self.currentlySkyicon = ko.observable(''); // current weather skycon
+	//self.formattedAddress = ko.observable('');	// formatted neighborhood location address
+	//self.topPicks = ko.observableArray('');	// most popular foursquare picks depending on neighborhood keywords and location
+	//self.dailyForecasts = ko.observableArray(''); // one week daily forecasts depeding on neighborhood location
+	//self.currentlyForecasts = ko.observable(''); // current weather forecast
+	//self.currentlySkyicon = ko.observable(''); // current weather skycon
 	self.photosAPIurl = ko.observableArray(''); // foursquare photos urls
-	self.selectedVenue = ko.observable(''); // selected venue info
-	self.chosenMarker = ko.observable(''); // selected marker info
+	//self.selectedVenue = ko.observable(''); // selected venue info
+	//self.chosenMarker = ko.observable(''); // selected marker info
 	self.displayForecastsList = ko.observable('false'); // boolean value for forecast list display
 	self.displayVenuesList = ko.observable('false'); // boolean value fore venues list display
 
@@ -53,6 +145,7 @@ function AppViewModel() {
 	};
 
 	// format and return one week daily forecasts data 
+	/*
   	self.computedDailyForecasts = ko.computed(function(){
 
   		var tempDailyForecasts = self.dailyForecasts();
@@ -112,7 +205,7 @@ function AppViewModel() {
   		}
   		return tempTopPicks;
   	});
-
+	*/
 	// setup and initialize skycons canvas display
   	self.skycons = function() {
   		var icons = new Skycons(),
