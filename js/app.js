@@ -34,6 +34,7 @@ var Neighborhood = function(data) {
 
   	// format and return most popular venues data 
   	// error handlings if no data is found
+/*
   	this.computedTopPicks = ko.computed(function() {
   		var tempTopPicks = self.topPicks();
 
@@ -76,17 +77,56 @@ var Neighborhood = function(data) {
   		}
   		return tempTopPicks;
   	});
+*/
 
 
 }
 
-var Venue = function() {
-	this.venueLat;
-	this.venueLon;
-	this.name;
-}
+var Venue = function( data ) {
+	// data that is always defined or need no formatting
+	this.id = data.venue.id;
+	this.name = data.venue.name;
+	this.lat = data.venue.location.lat;
+	this.lon = data.venue.location.lng;
+	this.tips = data.tips[0].text;
+	this.formattedAddress = data.venue.location.formattedAddress;
+	this.categories = data.venue.categories.name;
+	this.photoAlbumn = [];
+	this.marker = {};
+	var photoPrefix = 'https://irs0.4sqi.net/img/general/';
+	var photoPlaceHolder = 'http://placehold.it/100x100';
+	var photoSuffix;
 
-var Marker = function() {
+	// data that may be undefined or need formatting
+	this.formattedPhone = function(){
+		if (!data.venue.contact.formattedPhone)
+			return 'Phone Number Not Available';
+		else
+			return data.venue.contact.formattedPhone;
+	}
+
+	this.url = function() {
+		if (!data.venue.url)
+			return 'Website Not Available';
+		else
+			return data.venue.url;
+	}
+
+	this.rating = function() {
+		if (!data.venue.rating)
+			return '0.0';
+		else
+			return data.venue.rating;
+	}
+
+	this.featuredPhoto = function() {
+		if (!data.venue.featuredPhotos)
+			return photoPlaceHolder;
+		else {
+			photoSuffix = data.venue.featuredPhotos.items[0].suffix;
+  			return photoPrefix + 'width100' + photoSuffix;
+		}
+	}
 
 }
 
