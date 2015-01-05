@@ -3,86 +3,8 @@
  * @author sportzhulei@gmail.com (Lei Zhu)
  */
 
-
-var Neighborhood = function(data) {
-	this.placeLat;
-	this.placeLon;
-	this.formatedAddress;
-	this.topPicks = [];
-	this.venueMarkers = [];
-	this.currentlyForecast = ko.observable('');
-	this.currentlySkyicon = ko.observable('');
-	this.dailyForecasts = ko.observableArray([]);
-	this.selectedVenue = ko.observable('');
-	this.chosenMarker = ko.observable('');
-
-	// format and return one week daily forecasts data 
-	this.computedDailyForecasts = ko.computed(function(){
-
-  		var tempDailyForecasts = self.dailyForecasts();
-  		for (var i in tempDailyForecasts) {
-  			var date = new Date(tempDailyForecasts[i].time * 1000);
-  			// var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
-  			// var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
-  			var formatedTime = date.getDayName();
-
-  			tempDailyForecasts[i]['formatedTime'] = formatedTime;
-  		}
-
-  		return tempDailyForecasts;
-  	});
-
-  	// format and return most popular venues data 
-  	// error handlings if no data is found
-/*
-  	this.computedTopPicks = ko.computed(function() {
-  		var tempTopPicks = self.topPicks();
-
-  		for (var i in tempTopPicks) {
-
-  			var photoPrefix = 'https://irs0.4sqi.net/img/general/';
-  			var photoFullURL = 'http://placehold.it/100x100';
-
-  			if (!tempTopPicks[i].venue.contact.formattedPhone) {
-  				tempTopPicks[i].formatedContact = 'No contact available';
-  			}else{
-  				tempTopPicks[i].formatedContact = tempTopPicks[i].venue.contact.formattedPhone;
-  			}
-
-  			if (!tempTopPicks[i].tips) {
-  				tempTopPicks[i].formatedTip = 'No reviews available';
-  			}else{
-  				tempTopPicks[i].formatedTip = tempTopPicks[i].tips[0].text;
-  			}
-
-  			if (!tempTopPicks[i].venue.url) {
-  				tempTopPicks[i].formatedUrl = 'No website available';
-  			}else{
-  				tempTopPicks[i].formatedUrl = tempTopPicks[i].venue.url;
-  			}
-
-  			if (!tempTopPicks[i].venue.rating) {
-  				tempTopPicks[i].venue.formatedRating = '0.0';
-  			}else{
-  				tempTopPicks[i].venue.formatedRating = tempTopPicks[i].venue.rating;
-  			}
-
-  			if (tempTopPicks[i].venue.featuredPhotos){
-  				var photoSuffix = tempTopPicks[i].venue.featuredPhotos.items[0].suffix;
-  				photoFullURL = photoPrefix + 'width100' + photoSuffix;
-  			}
- 						
-  			tempTopPicks[i]['photoFullURL'] = photoFullURL;
-
-  		}
-  		return tempTopPicks;
-  	});
-*/
-
-
-}
-
-var Venue = function( data ) {
+var Venue = function( data, foursquareID ) {
+	var that = this;
 	// data that is always defined or need no formatting
 	this.id = data.venue.id;
 	this.name = data.venue.name;
@@ -96,6 +18,11 @@ var Venue = function( data ) {
 	var photoPrefix = 'https://irs0.4sqi.net/img/general/';
 	var photoPlaceHolder = 'http://placehold.it/100x100';
 	var photoSuffix;
+	var basePhotoAlbumnURL = 'https://api.foursquare.com/v2/venues/';
+
+	this.photoAlbumnURL = function ( foursquareID )	{
+		return basePhotoAlbumnURL + that.id + '/photos?' + foursquareID + '&v=20130815';
+	};
 
 	// data that may be undefined or need formatting
 	this.formattedPhone = function(){
@@ -130,8 +57,12 @@ var Venue = function( data ) {
 
 }
 
-var Forecast = function() {
-
+var Forecast = function(data) {
+	var date = new Date(data.time * 1000);
+  	this.formatedTime = date.getDayName();
+  	this.temperatureMin = data.temperatureMin;
+  	this.temperatureMax = data.temperatureMax;
+  	this.summary = data.summary;
 }
 
 
@@ -140,16 +71,14 @@ function AppViewModel() {
 	var self = this;
 	var map,
 		mapOptions,
-		//placeLat,
-		//placeLon,
-		//venueName,
+		placeLat,
+		placeLon,
 		bounds,
 		service,
 		marker,
-		//newNeighborhood,
 		infowindow;
 
-	//var venueMarkers = [];
+	var venueMarkers = [];
 	var defaultExploreKeyword = 'best nearby';
 	var defaultNeighborhood = 'new york';
 	var days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
@@ -157,14 +86,14 @@ function AppViewModel() {
 
 	self.exploreKeyword = ko.observable(''); // explore neighborhood keywords
 	self.neighborhood = ko.observable(defaultNeighborhood);	// neighborhood location
-	//self.formattedAddress = ko.observable('');	// formatted neighborhood location address
-	//self.topPicks = ko.observableArray('');	// most popular foursquare picks depending on neighborhood keywords and location
-	//self.dailyForecasts = ko.observableArray(''); // one week daily forecasts depeding on neighborhood location
-	//self.currentlyForecasts = ko.observable(''); // current weather forecast
-	//self.currentlySkyicon = ko.observable(''); // current weather skycon
+	self.formattedAddress = ko.observable('');	// formatted neighborhood location address
+	self.topPicks = ko.observableArray('');	// most popular foursquare picks depending on neighborhood keywords and location
+	self.dailyForecasts = ko.observableArray(''); // one week daily forecasts depeding on neighborhood location
+	self.currentlyForecasts = ko.observable(''); // current weather forecast
+	self.currentlySkyicon = ko.observable(''); // current weather skycon
 	self.photosAPIurl = ko.observableArray(''); // foursquare photos urls
-	//self.selectedVenue = ko.observable(''); // selected venue info
-	//self.chosenMarker = ko.observable(''); // selected marker info
+	self.selectedVenue = ko.observable(''); // selected venue info
+	self.chosenMarker = ko.observable(''); // selected marker info
 	self.displayForecastsList = ko.observable('false'); // boolean value for forecast list display
 	self.displayVenuesList = ko.observable('false'); // boolean value fore venues list display
 
@@ -184,68 +113,6 @@ function AppViewModel() {
 		return days[ this.getDay() ];
 	};
 
-	// format and return one week daily forecasts data 
-	/*
-  	self.computedDailyForecasts = ko.computed(function(){
-
-  		var tempDailyForecasts = self.dailyForecasts();
-  		for (var i in tempDailyForecasts) {
-  			var date = new Date(tempDailyForecasts[i].time * 1000);
-  			// var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
-  			// var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
-  			var formatedTime = date.getDayName();
-
-  			tempDailyForecasts[i]['formatedTime'] = formatedTime;
-  		}
-
-  		return tempDailyForecasts;
-  	});
-
-  	// format and return most popular venues data 
-  	// error handlings if no data is found
-  	self.computedTopPicks = ko.computed(function() {
-  		var tempTopPicks = self.topPicks();
-
-  		for (var i in tempTopPicks) {
-
-  			var photoPrefix = 'https://irs0.4sqi.net/img/general/';
-  			var photoFullURL = 'http://placehold.it/100x100';
-
-  			if (!tempTopPicks[i].venue.contact.formattedPhone) {
-  				tempTopPicks[i].formatedContact = 'No contact available';
-  			}else{
-  				tempTopPicks[i].formatedContact = tempTopPicks[i].venue.contact.formattedPhone;
-  			}
-
-  			if (!tempTopPicks[i].tips) {
-  				tempTopPicks[i].formatedTip = 'No reviews available';
-  			}else{
-  				tempTopPicks[i].formatedTip = tempTopPicks[i].tips[0].text;
-  			}
-
-  			if (!tempTopPicks[i].venue.url) {
-  				tempTopPicks[i].formatedUrl = 'No website available';
-  			}else{
-  				tempTopPicks[i].formatedUrl = tempTopPicks[i].venue.url;
-  			}
-
-  			if (!tempTopPicks[i].venue.rating) {
-  				tempTopPicks[i].venue.formatedRating = '0.0';
-  			}else{
-  				tempTopPicks[i].venue.formatedRating = tempTopPicks[i].venue.rating;
-  			}
-
-  			if (tempTopPicks[i].venue.featuredPhotos){
-  				var photoSuffix = tempTopPicks[i].venue.featuredPhotos.items[0].suffix;
-  				photoFullURL = photoPrefix + 'width100' + photoSuffix;
-  			}
- 						
-  			tempTopPicks[i]['photoFullURL'] = photoFullURL;
-
-  		}
-  		return tempTopPicks;
-  	});
-	*/
 	// setup and initialize skycons canvas display
   	self.skycons = function() {
   		var icons = new Skycons(),
@@ -378,10 +245,9 @@ function AppViewModel() {
 		infowindow = new google.maps.InfoWindow();
 		placeLat = place.geometry.location.k;
 		placeLon = place.geometry.location.D;
-		venueName = place.name;
-		var formattedVenueAddress = place.formatted_address; 
-		self.formattedAddress(formattedVenueAddress);
-		newNeighborhood = new google.maps.LatLng(placeLat, placeLon);
+		// venueName = place.name;
+		self.formattedAddress(place.formatted_address);
+		var newNeighborhood = new google.maps.LatLng(placeLat, placeLon);
 		map.setCenter(newNeighborhood);
 
 		// create one marker for neighborhood address user input
@@ -408,6 +274,77 @@ function AppViewModel() {
  	 * create venues markers on map
  	 * @return {void}
  	 */
+ 	function getFoursquareData() {
+		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
+  		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
+  		var neighborhoodLL = '&ll=' + placeLat + ',' + placeLon;
+  		var query = '&query=' + self.exploreKeyword();
+  		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
+  		$.ajax({
+  			url: foursquareURL, 
+  			dataType:'jsonp',
+  			success: function(data) {
+
+  				var initialFoursquareData = data.response.groups[0].items;
+  				initialFoursquareData.forEach(function(venueItem) {
+  					self.topPicks.push( new Venue(venueItem, foursquareID) );
+  				});
+  				// self.topPicks(data.response.groups[0].items);
+  				/*
+				var venueImgsURLlist = []; // keep a list of all venues photo urls
+				var venueIDlist = []; // keep a list of all venues ID
+
+				// retrieve and set venue photo url to get photos for each venue
+
+				for(var i in self.topPicks()) {
+					var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
+					var venueID = self.topPicks()[i].venue.id;
+					var venueName = self.topPicks()[i].venue.name;
+					var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
+					venueImgsURLlist.push(venueImgsURL);
+					venueIDlist.push(venueID);
+				}
+
+				// create empty 2D array to store foursquare venue photos data 
+	      		function get2DArray(size) {
+				    size = size > 0 ? size : 0;
+				    var arr = [];
+				    while(size--) {
+				        arr.push([]);
+				    }
+				    return arr;
+				}
+
+				var venuesPhotos = get2DArray(venueIDlist.length);
+				*/
+
+				// set venue photos groups for swipebox lightbox display
+				// setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
+
+	      		// create venue markers
+	      		/*
+	      		for (var i in self.topPicks()) {
+
+	        		createVenueMarker(self.topPicks()[i].venue);
+	      		}
+	      		*/
+	      		self.topPicks().forEach(function(venueItem)) {
+	      			setPhotoAlbumns(venueItem);
+	      			createVenueMarker(venueItem);
+	      		}
+
+	      		// set bounds according to suggestedBounds from foursquare data resonse
+	      		var tempBounds = data.response.suggestedBounds;
+		      	if (tempBounds != undefined) {
+			        bounds = new google.maps.LatLngBounds(
+			        	new google.maps.LatLng(tempBounds.sw.lat, tempBounds.sw.lng),
+			        	new google.maps.LatLng(tempBounds.ne.lat, tempBounds.ne.lng));
+			        map.fitBounds(bounds);
+		      	}
+      		}	     		
+      	});
+	}
+ /*
 	function getFoursquareData() {
 		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
@@ -464,7 +401,7 @@ function AppViewModel() {
       		}	     		
       	});
 	}
-
+*/
 	/**
  	 * set venue photos groups for swipebox lightbox display
  	 * create venues markers on map
@@ -473,6 +410,38 @@ function AppViewModel() {
  	 * @param {Array.<Object>} venueImgsURLlist A array to keep a list of all venues photo urls
  	 * @return {void}
  	 */
+ 	 function setPhotoAlbumns (venueItem) {
+
+		var baseImgURL = 'https://irs3.4sqi.net/img/general/'; // base url to retrieve venue photos
+
+		$.ajax({
+			url: venueItem.photoAlbumnURL,
+			dataType: 'jsonp',
+			success: function(data) {
+
+				var imgItems = data.response.photos.items;
+
+				for (var i in imgItems) {
+					var venueImgURL = baseImgURL + 'width800' + imgItems[i].suffix;
+					var venueImgObj = {
+						href: venueImgURL,
+						title: venueItem.name
+					};
+
+					venueItem.photoAlbumn.push(venueImgObj);
+				}
+			}
+		});
+
+  		var venueAlbumnID = '#' + venueItem.id;
+  		
+  		// setup swipebox photo groups click function
+		$(venueAlbumnID).click(function( e ) {
+			e.preventDefault();
+			$.swipebox(venueItem.photoAlbumn);
+		});
+	}
+/*
 	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist) {
 
 		var baseImgURL = 'https://irs3.4sqi.net/img/general/'; // base url to retrieve venue photos
@@ -511,7 +480,7 @@ function AppViewModel() {
   			});
 		}
 	}
-
+*/
 	// get forecasts data from forecast.io API ajax call
 	// use jsonp data type to avoid cross domain error
 	function getForecastData() {
