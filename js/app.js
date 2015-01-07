@@ -13,6 +13,7 @@ var Venue = function( data, foursquareID ) {
 	this.tips = data.tips[0].text;
 	this.formattedAddress = data.venue.location.formattedAddress;
 	this.categories = data.venue.categories.name;
+	this.foursquareUrl = "https://foursquare.com/v/" + this.id;
 	this.photoAlbumn = [];
 	this.marker = {};
 	var photoPrefix = 'https://irs0.4sqi.net/img/general/';
@@ -56,7 +57,7 @@ var Venue = function( data, foursquareID ) {
 	}
 
 }
-
+/*
 var Forecast = function(data) {
 	var date = new Date(data.time * 1000);
   	this.formatedTime = date.getDayName();
@@ -64,7 +65,7 @@ var Forecast = function(data) {
   	this.temperatureMax = data.temperatureMax;
   	this.summary = data.summary;
 }
-
+*/
 
 function AppViewModel() {
 
@@ -86,6 +87,7 @@ function AppViewModel() {
 
 	self.exploreKeyword = ko.observable(''); // explore neighborhood keywords
 	self.neighborhood = ko.observable(defaultNeighborhood);	// neighborhood location
+	self.currentNeighborhoodMarker = ko.observable('');
 	self.formattedAddress = ko.observable('');	// formatted neighborhood location address
 	self.topPicks = ko.observableArray('');	// most popular foursquare picks depending on neighborhood keywords and location
 	self.dailyForecasts = ko.observableArray(''); // one week daily forecasts depeding on neighborhood location
@@ -152,12 +154,17 @@ function AppViewModel() {
 	// takes user's input in neighborhood address
 	// update displays for map, weather forecasts and popular venues
 	self.computedNeighborhood = function() {
-		if (self.neighborhood() != '') {
-			if (venueMarkers.length > 0)
-				removeVenueMarkers();
+		if (!isEmpty(self.neighborhood())) {
+
+			removeVenueMarkers();
 			getNeighborhood(self.neighborhood());
-		}	
+		
 	};
+
+	// check if user's input string is blank or contains only white-space
+	var isEmpty = function ( input ) {
+		return (input.length === 0 || !input.trim());
+	}
 
 	// when user update neighborhood address in input bar,
 	// update displays for map, weather forecasts and popular venues
@@ -175,30 +182,30 @@ function AppViewModel() {
  	 * @return {void}
  	 */ 
 	self.panToMarker = function(venue) {
-		var venueInfo = setVenueInfowindow(venue.venue);
 
-		for (var i in venueMarkers) {
-			if (venueMarkers[i].title === venueInfo.venueName) {
-				self.chosenMarker(venueMarkers[i]);
-				self.selectedVenue(venueInfo.venueID);
-				infowindow.setContent(venueInfo.contentString);
-				infowindow.open(map, venueMarkers[i]);
-				map.panTo(venueMarkers[i].position);
-				selectedMarkerBounce(venueMarkers[i]);
-			}
-		}
+		var venueInfowindowStr = setVenueInfowindowStr(venue);
+		var venuePosition = new google.maps.LatLng(venue.lat, venue.lon);
+
+		self.chosenMarker(venue.marker);
+		self.selectedVenue(venue.id);
+		infowindow.setContent(venueInfowindowStr);
+		infowindow.open(map, venue.marker);
+		map.panTo(venuePosition);
+		selectedMarkerBounce(venue.marker);
+
 	}
 
 	// empty venuMarkers array, remove all venue markers on map
 	// this function gets called once neighborhood keywords or address is updated
 	function removeVenueMarkers() {
-	    for (var i = 0; i < venueMarkers.length; i++) {
 
-    		venueMarkers[i].setMap(null);
+		self.currentNeighborhoodMarker.setMap(null);
 
-		}
+		self.topPicks.forEach(function(venueItem){
+			venueItem.marker.setMap(null);
+			venueItem.marker = {};
+		});
 
-		venueMarkers = [];
 	}
 
 	/**
@@ -230,7 +237,7 @@ function AppViewModel() {
 			infowindow.open(map, marker);
 		});
 
-		venueMarkers.push(marker); // push this marker to venueMarker array
+		self.currentNeighborhoodMarker = marker; 
 
 	}
 
@@ -289,45 +296,7 @@ function AppViewModel() {
   				initialFoursquareData.forEach(function(venueItem) {
   					self.topPicks.push( new Venue(venueItem, foursquareID) );
   				});
-  				// self.topPicks(data.response.groups[0].items);
-  				/*
-				var venueImgsURLlist = []; // keep a list of all venues photo urls
-				var venueIDlist = []; // keep a list of all venues ID
-
-				// retrieve and set venue photo url to get photos for each venue
-
-				for(var i in self.topPicks()) {
-					var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
-					var venueID = self.topPicks()[i].venue.id;
-					var venueName = self.topPicks()[i].venue.name;
-					var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
-					venueImgsURLlist.push(venueImgsURL);
-					venueIDlist.push(venueID);
-				}
-
-				// create empty 2D array to store foursquare venue photos data 
-	      		function get2DArray(size) {
-				    size = size > 0 ? size : 0;
-				    var arr = [];
-				    while(size--) {
-				        arr.push([]);
-				    }
-				    return arr;
-				}
-
-				var venuesPhotos = get2DArray(venueIDlist.length);
-				*/
-
-				// set venue photos groups for swipebox lightbox display
-				// setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
-
-	      		// create venue markers
-	      		/*
-	      		for (var i in self.topPicks()) {
-
-	        		createVenueMarker(self.topPicks()[i].venue);
-	      		}
-	      		*/
+  				
 	      		self.topPicks().forEach(function(venueItem)) {
 	      			setPhotoAlbumns(venueItem);
 	      			createVenueMarker(venueItem);
@@ -344,64 +313,7 @@ function AppViewModel() {
       		}	     		
       	});
 	}
- /*
-	function getFoursquareData() {
-		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
-  		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
-  		var neighborhoodLL = '&ll=' + placeLat + ',' + placeLon;
-  		var query = '&query=' + self.exploreKeyword();
-  		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
-  		$.ajax({
-  			url: foursquareURL, 
-  			dataType:'jsonp',
-  			success: function(data) {
-  				self.topPicks(data.response.groups[0].items);
-				var venueImgsURLlist = []; // keep a list of all venues photo urls
-				var venueIDlist = []; // keep a list of all venues ID
-
-				// retrieve and set venue photo url to get photos for each venue
-				for(var i in self.topPicks()) {
-					var baseImgsURL = 'https://api.foursquare.com/v2/venues/';
-					var venueID = self.topPicks()[i].venue.id;
-					var venueName = self.topPicks()[i].venue.name;
-					var venueImgsURL = baseImgsURL + venueID + '/photos?' + foursquareID + '&v=20130815';
-					venueImgsURLlist.push(venueImgsURL);
-					venueIDlist.push(venueID);
-				}
-
-				// create empty 2D array to store foursquare venue photos data 
-	      		function get2DArray(size) {
-				    size = size > 0 ? size : 0;
-				    var arr = [];
-				    while(size--) {
-				        arr.push([]);
-				    }
-				    return arr;
-				}
-
-				var venuesPhotos = get2DArray(venueIDlist.length);
-
-				// set venue photos groups for swipebox lightbox display
-				setPhotosGroups(venuesPhotos, venueIDlist, venueImgsURLlist);
-
-	      		// create venue markers
-	      		for (var i in self.topPicks()) {
-
-	        		createVenueMarker(self.topPicks()[i].venue);
-	      		}
-
-	      		// set bounds according to suggestedBounds from foursquare data resonse
-	      		var tempBounds = data.response.suggestedBounds;
-		      	if (tempBounds != undefined) {
-			        bounds = new google.maps.LatLngBounds(
-			        	new google.maps.LatLng(tempBounds.sw.lat, tempBounds.sw.lng),
-			        	new google.maps.LatLng(tempBounds.ne.lat, tempBounds.ne.lng));
-			        map.fitBounds(bounds);
-		      	}
-      		}	     		
-      	});
-	}
-*/
+ 
 	/**
  	 * set venue photos groups for swipebox lightbox display
  	 * create venues markers on map
@@ -441,46 +353,7 @@ function AppViewModel() {
 			$.swipebox(venueItem.photoAlbumn);
 		});
 	}
-/*
-	function setPhotosGroups (venuesPhotos, venueIDlist, venueImgsURLlist) {
 
-		var baseImgURL = 'https://irs3.4sqi.net/img/general/'; // base url to retrieve venue photos
-
-		// store venue photos data in 2D array
-		// use closure to keep i index in venuePhotos 2D array
-		for (var i in venueImgsURLlist) {
-			(function(i){
-      			$.ajax({
-      				url: venueImgsURLlist[i],
-      				dataType: 'jsonp',
-      				success: function(data) {
-
-      					var imgItems = data.response.photos.items;
-
-      					for (var j in imgItems) {
-      						var venueImgURL = baseImgURL + 'width800' + imgItems[j].suffix;
-      						var venueImgObj = {
-      							href: venueImgURL,
-      							title: venueName
-      						};
-      						venuesPhotos[i].push(venueImgObj);
-      					}
-      				}
-      			});
-
-      		})(i);
-
-      		var venueIDphotos = '#' + venueIDlist[i];
-      		
-      		// setup swipebox photo groups click function
-  			$(venueIDphotos).click(function( e ) {
-  				e.preventDefault();
-  				var venueIDlistIndex = venueIDlist.indexOf(event.target.id);
-  				$.swipebox(venuesPhotos[venueIDlistIndex]);
-  			});
-		}
-	}
-*/
 	// get forecasts data from forecast.io API ajax call
 	// use jsonp data type to avoid cross domain error
 	function getForecastData() {
@@ -507,55 +380,32 @@ function AppViewModel() {
 	 * @param {Object} venue A venue object 
  	 * @return {void}
  	 */
-	function setVenueInfowindow(venue) {
-		var lat = venue.location.lat;
-		var lng = venue.location.lng;
-		var venueName = venue.name;
-		var venueID = venue.id;
-		var venueCategory = venue.categories[0].name;
-		var venuePosition = new google.maps.LatLng(lat, lng);
-		var venueAddress = venue.location.formattedAddress;
-		var venueContact = venue.contact.formattedPhone;
-		var foursquareUrl = "https://foursquare.com/v/" + venue.id;
-		var venueRating = venue.rating;
-		var venueUrl = venue.url;
-
-		if (!venueContact)
-			venueContact = 'Contact not available';
-		if (!venueUrl)
-			venueUrl = 'Website not available';
-		if (!venueRating)
-			venueRating = '0.0';
-
+	function setVenueInfowindowStr(venue) {
 
 		var contentString = '<div class="venue-infowindow">' 
 							+ '<div class="venue-name">'
-							+ '<a href ="' + foursquareUrl + '">'
-							+ venueName
+							+ '<a href ="' + venue.foursquareUrl + '">'
+							+ venue.name
 							+ '</a>'
 							+ '<span class="venue-rating badge">'
-							+ venueRating
+							+ venue.rating
 							+ '</span>'
 							+ '</div>'
 							+ '<div class="venue-category"><span class="glyphicon glyphicon-tag"></span>'
-							+ venueCategory
+							+ venue.categories
 							+ '</div>'
 							+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
-							+ venueAddress
+							+ venue.formattedAddress
 							+ '</div>'
 							+ '<div class="venue-contact"><span class="glyphicon glyphicon-earphone"></span>'
-							+ venueContact
+							+ venue.formattedPhone
 							+ '</div>'  
 							+ '<div class="venue-url"><span class="glyphicon glyphicon-globe"></span>'
-							+ venueUrl
+							+ venue.url
 							+ '</div>'  						    						    						
 							+ '</div>';
-		return	{
-					'venueName': venueName,
-					'contentString': contentString,
-					'venueID': venueID,
-					'venuePosition': venuePosition
-				}
+
+		return	contentString;
 
 	}
 
@@ -570,28 +420,30 @@ function AppViewModel() {
  	 */
 	function createVenueMarker(venue) {
 
-		var venueInfo = setVenueInfowindow(venue);
+		var venueInfowindowStr = setVenueInfowindowStr(venue);
+
+		var venuePosition = new google.maps.LatLng(venue.lat, venue.lon);
 
 		var venueMarker = new google.maps.Marker({
 		  	map: map,
-		  	position: venueInfo.venuePosition,
-		  	title: venueInfo.venueName
+		  	position: venuePosition,
+		  	title: venue.name
 		});
 	    
 		google.maps.event.addListener(venueMarker, 'click', function() {
 	    	
-			document.getElementById(venueInfo.venueID).scrollIntoView();
+			document.getElementById(venue.id).scrollIntoView();
 			var clickEvent = jQuery.Event('click');
 			clickEvent.stopPropagation();
-			$('#' + venueInfo.venueID).closest(".venue-listing-item").trigger('clickEvent');
-			self.selectedVenue(venueInfo.venueID);
-			infowindow.setContent(venueInfo.contentString);
+			$('#' + venue.id).closest(".venue-listing-item").trigger('clickEvent');
+			self.selectedVenue(venue.id);
+			infowindow.setContent(venueInfowindowStr);
 			infowindow.open(map, venueMarker);
 			selectedMarkerBounce(venueMarker);
-			map.panTo(venueInfo.venuePosition);
+			map.panTo(venuePosition);
 		});
 
-		venueMarkers.push(venueMarker);
+		venue.marker = venueMarker;
 
 	}
 
@@ -604,8 +456,8 @@ function AppViewModel() {
 	function selectedMarkerBounce(venueMarker) {
 		if (venueMarker.getAnimation() == null) {
 			self.chosenMarker(venueMarker);
-			venueMarkers.forEach(function(marker) {
-				marker.setAnimation(null);
+			self.topPicks.forEach(function(venue) {
+				venue.marker.setAnimation(null);
 			});
 			
 			venueMarker.setAnimation(google.maps.Animation.BOUNCE);
