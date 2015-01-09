@@ -12,7 +12,7 @@ var Venue = function( data, foursquareID ) {
 	this.lon = data.venue.location.lng;
 	this.tips = data.tips[0].text;
 	this.formattedAddress = data.venue.location.formattedAddress;
-	this.categories = data.venue.categories.name;
+	this.categories = data.venue.categories[0].name;
 	this.foursquareUrl = "https://foursquare.com/v/" + this.id;
 	this.photoAlbumn = [];
 	this.marker = {};
@@ -21,33 +21,32 @@ var Venue = function( data, foursquareID ) {
 	var photoSuffix;
 	var basePhotoAlbumnURL = 'https://api.foursquare.com/v2/venues/';
 
-	this.photoAlbumnURL = function ( foursquareID )	{
+	var getPhotoAlbumnURL = function ( foursquareID )	{
 		return basePhotoAlbumnURL + that.id + '/photos?' + foursquareID + '&v=20130815';
 	};
 
-	// data that may be undefined or need formatting
-	this.formattedPhone = function(){
+	var getFormattedPhone = function(){
 		if (!data.venue.contact.formattedPhone)
 			return 'Phone Number Not Available';
 		else
 			return data.venue.contact.formattedPhone;
 	}
 
-	this.url = function() {
+	var getUrl = function() {
 		if (!data.venue.url)
 			return 'Website Not Available';
 		else
 			return data.venue.url;
 	}
 
-	this.rating = function() {
+	var getRating = function() {
 		if (!data.venue.rating)
 			return '0.0';
 		else
 			return data.venue.rating;
 	}
 
-	this.featuredPhoto = function() {
+	var getFeaturedPhoto = function() {
 		if (!data.venue.featuredPhotos)
 			return photoPlaceHolder;
 		else {
@@ -55,6 +54,16 @@ var Venue = function( data, foursquareID ) {
   			return photoPrefix + 'width100' + photoSuffix;
 		}
 	}
+	// data that may be undefined or need formatting
+	this.photoAlbumnURL = getPhotoAlbumnURL ( foursquareID );
+
+	this.formattedPhone = getFormattedPhone();
+
+	this.url = getUrl();
+
+	this.rating = getRating();
+
+	this.featuredPhoto = getFeaturedPhoto();
 
 }
 /*
@@ -172,9 +181,10 @@ function AppViewModel() {
 	// update displays for map, weather forecasts and popular venues
 	self.computedNeighborhood = function() {
 		if (!isEmpty(self.neighborhood())) {
-
 			removeVenueMarkers();
-			getNeighborhood(self.neighborhood());
+			self.topPicks([]);
+			getNeighborhood(self.neighborhood());		
+		} // add
 		
 	};
 
@@ -218,12 +228,13 @@ function AppViewModel() {
 
 		self.currentNeighborhoodMarker.setMap(null);
 
-		self.topPicks.forEach(function(venueItem){
+		self.topPicks().forEach(function(venueItem){
 			venueItem.marker.setMap(null);
 			venueItem.marker = {};
 		});
 
 	}
+
 
 	/**
  	 * Create a neighborhood marker in a shape of start in black color
@@ -255,6 +266,7 @@ function AppViewModel() {
 		});
 
 		self.currentNeighborhoodMarker = marker; 
+		console.log(self.currentNeighborhoodMarker);		
 
 	}
 
@@ -306,18 +318,21 @@ function AppViewModel() {
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
   		$.ajax({
   			url: foursquareURL, 
-  			dataType:'jsonp',
+  			//dataType:'jsonp',
   			success: function(data) {
 
   				var initialFoursquareData = data.response.groups[0].items;
   				initialFoursquareData.forEach(function(venueItem) {
   					self.topPicks.push( new Venue(venueItem, foursquareID) );
   				});
+
+  				console.log(self.topPicks());
+  				//console.log('photo albumn url: ' + self.topPicks()[0].photoAlbumnURL);
   				
-	      		self.topPicks().forEach(function(venueItem)) {
+	      		self.topPicks().forEach(function(venueItem) { // add
 	      			setPhotoAlbumns(venueItem);
 	      			createVenueMarker(venueItem);
-	      		}
+	      		});
 
 	      		// set bounds according to suggestedBounds from foursquare data resonse
 	      		var tempBounds = data.response.suggestedBounds;
@@ -461,6 +476,7 @@ function AppViewModel() {
 		});
 
 		venue.marker = venueMarker;
+		console.log(venue.marker);
 
 	}
 
@@ -473,7 +489,7 @@ function AppViewModel() {
 	function selectedMarkerBounce(venueMarker) {
 		if (venueMarker.getAnimation() == null) {
 			self.chosenMarker(venueMarker);
-			self.topPicks.forEach(function(venue) {
+			self.topPicks().forEach(function(venue) {
 				venue.marker.setAnimation(null);
 			});
 			
@@ -555,3 +571,4 @@ $(function() {
 
 
 });
+
