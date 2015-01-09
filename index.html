@@ -98,33 +98,33 @@
           </div>
 
           <div data-bind="visible: displayVenuesList" id="venues-listing" class="venues-listing-box" style="display:none"> 
-            <!-- ko foreach: computedTopPicks() -->
-            <div data-bind="css:{'selected-venue-item': venue.id === $root.selectedVenue()}, click: $root.panToMarker" class="venue-listing-item group">
+            <!-- ko foreach: topPicks() -->
+            <div data-bind="css:{'selected-venue-item': id === $root.selectedVenue()}, click: $root.panToMarker" class="venue-listing-item group">
               <div class="left">
-                <div data-bind="text: venue.name" class="venue-name"></div>
+                <div data-bind="text: name" class="venue-name"></div>
                 <div class="venue-sub group">
-                  <div class="venue-rating"><span data-bind="text: venue.formatedRating" class="badge"></span></div>
-                  <div data-bind="text: venue.location.formattedAddress" class="venue-address"></div>
+                  <div class="venue-rating"><span data-bind="text: rating" class="badge"></span></div>
+                  <div data-bind="text: formattedAddress" class="venue-address"></div>
                 </div>
                 <div class="venue-category">
                   <div class="glyphicon glyphicon-tag"></div>
-                  <div data-bind="text: venue.categories[0].name" class="content"></div>
+                  <div data-bind="text: categories" class="content"></div>
                 </div>
                 <div class="venue-contact">
                   <div class="glyphicon glyphicon-earphone"></div>
-                  <div data-bind="text: formatedContact" class="content"></div>
+                  <div data-bind="text: formatedPhone" class="content"></div>
                 </div>
                 <div class="venue-website">
                   <div class="glyphicon glyphicon-globe"></div>
-                  <div data-bind="text: formatedUrl" class="content"></div>
+                  <div data-bind="text: url" class="content"></div>
                 </div>
                 <div class="venue-review">
                   <div class="glyphicon glyphicon-user"></div>
-                  <div data-bind="text: formatedTip" class="content"></div>
+                  <div data-bind="text: tips" class="content"></div>
                 </div>
               </div>
               <div class="right">
-                <img data-bind="attr: {src: photoFullURL, id: venue.id}" class="featured-photo"/>
+                <img data-bind="attr: {src: featuredPhoto, id: id}" class="featured-photo"/>
               </div>
             </div>  
             <!-- /ko -->         

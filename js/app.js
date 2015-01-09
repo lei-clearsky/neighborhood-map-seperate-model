@@ -115,6 +115,23 @@ function AppViewModel() {
 		return days[ this.getDay() ];
 	};
 
+	// work on forecast model later
+	// format and return one week daily forecasts data 
+  	self.computedDailyForecasts = ko.computed(function(){
+
+  		var tempDailyForecasts = self.dailyForecasts();
+  		for (var i in tempDailyForecasts) {
+  			var date = new Date(tempDailyForecasts[i].time * 1000);
+  			// var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
+  			// var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
+  			var formatedTime = date.getDayName();
+
+  			tempDailyForecasts[i]['formatedTime'] = formatedTime;
+  		}
+
+  		return tempDailyForecasts;
+  	});
+
 	// setup and initialize skycons canvas display
   	self.skycons = function() {
   		var icons = new Skycons(),
