@@ -16,55 +16,59 @@ var Venue = function( data, foursquareID ) {
 	this.foursquareUrl = "https://foursquare.com/v/" + this.id;
 	this.photoAlbumn = [];
 	this.marker = {};
-	var photoPrefix = 'https://irs0.4sqi.net/img/general/';
-	var photoPlaceHolder = 'http://placehold.it/100x100';
-	var photoSuffix;
-	var basePhotoAlbumnURL = 'https://api.foursquare.com/v2/venues/';
+	this.photoPrefix = 'https://irs0.4sqi.net/img/general/';
+	this.photoPlaceHolder = 'http://placehold.it/100x100';
+	this.photoSuffix;
+	this.basePhotoAlbumnURL = 'https://api.foursquare.com/v2/venues/';
 
-	var getPhotoAlbumnURL = function ( foursquareID )	{
-		return basePhotoAlbumnURL + that.id + '/photos?' + foursquareID + '&v=20130815';
-	};
+	// data that may be undefined or need formatting
+	this.photoAlbumnURL = this.getPhotoAlbumnURL (data, foursquareID );
 
-	var getFormattedPhone = function(){
+	this.formattedPhone = this.getFormattedPhone(data);
+
+	this.url = this.getUrl(data);
+
+	this.rating = this.getRating(data);
+
+	this.featuredPhoto = this.getFeaturedPhoto(data);
+
+}
+
+Venue.prototype = {
+
+	getPhotoAlbumnURL: function (data, foursquareID )	{
+		return this.basePhotoAlbumnURL + this.id + '/photos?' + foursquareID + '&v=20130815';
+	},
+
+	getFormattedPhone: function(data){
 		if (!data.venue.contact.formattedPhone)
 			return 'Phone Number Not Available';
 		else
 			return data.venue.contact.formattedPhone;
-	}
+	},
 
-	var getUrl = function() {
+	getUrl: function(data) {
 		if (!data.venue.url)
 			return 'Website Not Available';
 		else
 			return data.venue.url;
-	}
+	},
 
-	var getRating = function() {
+	getRating: function(data) {
 		if (!data.venue.rating)
 			return '0.0';
 		else
 			return data.venue.rating;
-	}
+	},
 
-	var getFeaturedPhoto = function() {
+	getFeaturedPhoto: function(data) {
 		if (!data.venue.featuredPhotos)
 			return photoPlaceHolder;
 		else {
-			photoSuffix = data.venue.featuredPhotos.items[0].suffix;
-  			return photoPrefix + 'width100' + photoSuffix;
+			this.photoSuffix = data.venue.featuredPhotos.items[0].suffix;
+  			return this.photoPrefix + 'width100' + this.photoSuffix;
 		}
 	}
-	// data that may be undefined or need formatting
-	this.photoAlbumnURL = getPhotoAlbumnURL ( foursquareID );
-
-	this.formattedPhone = getFormattedPhone();
-
-	this.url = getUrl();
-
-	this.rating = getRating();
-
-	this.featuredPhoto = getFeaturedPhoto();
-
 }
 /*
 var Forecast = function(data) {
