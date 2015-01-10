@@ -10,7 +10,6 @@ var Venue = function( data, foursquareID ) {
 	this.name = data.venue.name;
 	this.lat = data.venue.location.lat;
 	this.lon = data.venue.location.lng;
-	this.tips = data.tips[0].text;
 	this.formattedAddress = data.venue.location.formattedAddress;
 	this.categories = data.venue.categories[0].name;
 	this.foursquareUrl = "https://foursquare.com/v/" + this.id;
@@ -26,6 +25,8 @@ var Venue = function( data, foursquareID ) {
 
 	this.formattedPhone = this.getFormattedPhone(data);
 
+	this.tips = this.getTips(data);
+
 	this.url = this.getUrl(data);
 
 	this.rating = this.getRating(data);
@@ -36,15 +37,22 @@ var Venue = function( data, foursquareID ) {
 
 Venue.prototype = {
 
-	getPhotoAlbumnURL: function (data, foursquareID )	{
+	getPhotoAlbumnURL: function (data, foursquareID ) {
 		return this.basePhotoAlbumnURL + this.id + '/photos?' + foursquareID + '&v=20130815';
 	},
 
-	getFormattedPhone: function(data){
-		if (!data.venue.contact.formattedPhone)
-			return 'Phone Number Not Available';
+	getFormattedPhone: function(data) {
+		if (!data.tips)
+			return 'Tips Not Available';
 		else
-			return data.venue.contact.formattedPhone;
+			return data.tips[0].text;
+	},
+
+	getTips: function(data) {
+		if (!data.venue.url)
+			return 'Website Not Available';
+		else
+			return data.venue.url;
 	},
 
 	getUrl: function(data) {
@@ -63,22 +71,23 @@ Venue.prototype = {
 
 	getFeaturedPhoto: function(data) {
 		if (!data.venue.featuredPhotos)
-			return photoPlaceHolder;
+			return this.photoPlaceHolder;
 		else {
 			this.photoSuffix = data.venue.featuredPhotos.items[0].suffix;
   			return this.photoPrefix + 'width100' + this.photoSuffix;
 		}
 	}
 }
-/*
+
 var Forecast = function(data) {
 	var date = new Date(data.time * 1000);
-  	this.formatedTime = date.getDayName();
+  	this.formattedTime = date.getDayName();
+  	this.icon = data.icon;
   	this.temperatureMin = data.temperatureMin;
   	this.temperatureMax = data.temperatureMax;
   	this.summary = data.summary;
 }
-*/
+
 
 function AppViewModel() {
 
@@ -104,11 +113,9 @@ function AppViewModel() {
 	self.formattedAddress = ko.observable('');	// formatted neighborhood location address
 	self.topPicks = ko.observableArray('');	// most popular foursquare picks depending on neighborhood keywords and location
 	self.dailyForecasts = ko.observableArray(''); // one week daily forecasts depeding on neighborhood location
-	self.currentlyForecasts = ko.observable(''); // current weather forecast
-	self.currentlySkyicon = ko.observable(''); // current weather skycon
-	self.photosAPIurl = ko.observableArray(''); // foursquare photos urls
+	self.currentlyForecast = ko.observable(''); // current weather forecast
 	self.selectedVenue = ko.observable(''); // selected venue info
-	self.chosenMarker = ko.observable(''); // selected marker info
+	self.selectedMarker = ko.observable(''); // selected marker info
 	self.displayForecastsList = ko.observable('false'); // boolean value for forecast list display
 	self.displayVenuesList = ko.observable('false'); // boolean value fore venues list display
 
@@ -128,22 +135,6 @@ function AppViewModel() {
 		return days[ this.getDay() ];
 	};
 
-	// work on forecast model later
-	// format and return one week daily forecasts data 
-  	self.computedDailyForecasts = ko.computed(function(){
-
-  		var tempDailyForecasts = self.dailyForecasts();
-  		for (var i in tempDailyForecasts) {
-  			var date = new Date(tempDailyForecasts[i].time * 1000);
-  			// var formatedTime = days[date.getDay()] + ', ' + months[date.getMonth()] + ' ' + date.getDate();
-  			// var formatedTime = date.getDayName() + ', ' + date.getMonthName() + ' ' + date.getDate();
-  			var formatedTime = date.getDayName();
-
-  			tempDailyForecasts[i]['formatedTime'] = formatedTime;
-  		}
-
-  		return tempDailyForecasts;
-  	});
 
 	// setup and initialize skycons canvas display
   	self.skycons = function() {
@@ -187,8 +178,9 @@ function AppViewModel() {
 		if (!isEmpty(self.neighborhood())) {
 			removeVenueMarkers();
 			self.topPicks([]);
+			self.dailyForecasts([]);
 			getNeighborhood(self.neighborhood());		
-		} // add
+		} 
 		
 	};
 
@@ -217,7 +209,7 @@ function AppViewModel() {
 		var venueInfowindowStr = setVenueInfowindowStr(venue);
 		var venuePosition = new google.maps.LatLng(venue.lat, venue.lon);
 
-		self.chosenMarker(venue.marker);
+		self.selectedMarker(venue.marker);
 		self.selectedVenue(venue.id);
 		infowindow.setContent(venueInfowindowStr);
 		infowindow.open(map, venue.marker);
@@ -270,7 +262,7 @@ function AppViewModel() {
 		});
 
 		self.currentNeighborhoodMarker = marker; 
-		console.log(self.currentNeighborhoodMarker);		
+		//console.log(self.currentNeighborhoodMarker);		
 
 	}
 
@@ -301,7 +293,7 @@ function AppViewModel() {
 
 		// disable marker animation when infowindow is closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {  
-    		self.chosenMarker().setAnimation(null); 
+    		self.selectedMarker().setAnimation(null); 
 		});
 
 	};
@@ -373,7 +365,7 @@ function AppViewModel() {
 					var venueImgURL = baseImgURL + 'width800' + imgItems[i].suffix;
 					var venueImgObj = {
 						href: venueImgURL,
-						title: venueItem.name
+						title: venueItem.name + ' - ' + venueItem.formattedAddress
 					};
 
 					venueItem.photoAlbumn.push(venueImgObj);
@@ -403,9 +395,11 @@ function AppViewModel() {
 			url: forecastURL,
 			dataType: 'jsonp',
 			success: function(data) {
-				self.dailyForecasts(data.daily.data);
-				self.currentlyForecasts(data.currently);
-				self.currentlySkyicon(data.currently.icon);
+				var initialForecastDailyData = data.daily.data;
+				initialForecastDailyData.forEach(function(forecastItem){
+					self.dailyForecasts.push( new Forecast(forecastItem));
+				});
+				self.currentlyForecast(data.currently);
 			}
 		});
 	}
@@ -480,7 +474,7 @@ function AppViewModel() {
 		});
 
 		venue.marker = venueMarker;
-		console.log(venue.marker);
+		// console.log(venue.marker);
 
 	}
 
@@ -492,7 +486,7 @@ function AppViewModel() {
  	 */
 	function selectedMarkerBounce(venueMarker) {
 		if (venueMarker.getAnimation() == null) {
-			self.chosenMarker(venueMarker);
+			self.selectedMarker(venueMarker);
 			self.topPicks().forEach(function(venue) {
 				venue.marker.setAnimation(null);
 			});
