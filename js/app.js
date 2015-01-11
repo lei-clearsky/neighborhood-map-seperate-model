@@ -1,9 +1,13 @@
 /**
- * @fileoverview View Model for neighborhood map application
+ * @fileoverview Model and View Model for neighborhood map application
  * @author sportzhulei@gmail.com (Lei Zhu)
  */
 
-var Venue = function( data, foursquareID ) {
+/*
+ * Venue model.
+ * The Venue model that initialize and store venue data
+ */
+var Venue = function(data, foursquareID) {
 	var that = this;
 	// data that is always defined or need no formatting
 	this.id = data.venue.id;
@@ -21,7 +25,7 @@ var Venue = function( data, foursquareID ) {
 	this.basePhotoAlbumnURL = 'https://api.foursquare.com/v2/venues/';
 
 	// data that may be undefined or need formatting
-	this.photoAlbumnURL = this.getPhotoAlbumnURL (data, foursquareID );
+	this.photoAlbumnURL = this.getPhotoAlbumnURL(data, foursquareID);
 
 	this.formattedPhone = this.getFormattedPhone(data);
 
@@ -35,42 +39,43 @@ var Venue = function( data, foursquareID ) {
 
 }
 
+// functions for Venue data error handlings and formmatting
 Venue.prototype = {
 
-	getPhotoAlbumnURL: function (data, foursquareID ) {
+	getPhotoAlbumnURL: function(data, foursquareID) {
 		return this.basePhotoAlbumnURL + this.id + '/photos?' + foursquareID + '&v=20130815';
 	},
 
 	getFormattedPhone: function(data) {
-		if (!data.tips)
+		if ( !data.tips )
 			return 'Tips Not Available';
 		else
 			return data.tips[0].text;
 	},
 
 	getTips: function(data) {
-		if (!data.venue.url)
+		if ( !data.venue.url )
 			return 'Website Not Available';
 		else
 			return data.venue.url;
 	},
 
 	getUrl: function(data) {
-		if (!data.venue.url)
+		if ( !data.venue.url )
 			return 'Website Not Available';
 		else
 			return data.venue.url;
 	},
 
 	getRating: function(data) {
-		if (!data.venue.rating)
+		if ( !data.venue.rating )
 			return '0.0';
 		else
 			return data.venue.rating;
 	},
 
 	getFeaturedPhoto: function(data) {
-		if (!data.venue.featuredPhotos)
+		if ( !data.venue.featuredPhotos )
 			return this.photoPlaceHolder;
 		else {
 			this.photoSuffix = data.venue.featuredPhotos.items[0].suffix;
@@ -79,8 +84,12 @@ Venue.prototype = {
 	}
 }
 
+/*
+ * Forecast model.
+ * The Forecast model that initialize and store forecast data
+ */
 var Forecast = function(data) {
-	var date = new Date(data.time * 1000);
+	var date = new Date( data.time * 1000 );
   	this.formattedTime = date.getDayName();
   	this.icon = data.icon;
   	this.temperatureMin = data.temperatureMin;
@@ -88,18 +97,21 @@ var Forecast = function(data) {
   	this.summary = data.summary;
 }
 
-
+/*
+ * Neighborhood Map View Model.
+ * The View Model for Neighborhood Map application
+ */
 function AppViewModel() {
 
 	var self = this;
 	var map,
-		mapOptions,
-		placeLat,
-		placeLon,
-		bounds,
-		service,
-		marker,
-		infowindow;
+	mapOptions,
+	placeLat,
+	placeLon,
+	bounds,
+	service,
+	marker,
+	infowindow;
 
 	var venueMarkers = [];
 	var defaultExploreKeyword = 'best nearby';
@@ -109,7 +121,7 @@ function AppViewModel() {
 
 	self.exploreKeyword = ko.observable(''); // explore neighborhood keywords
 	self.neighborhood = ko.observable(defaultNeighborhood);	// neighborhood location
-	self.currentNeighborhoodMarker = ko.observable('');
+	self.currentNeighborhoodMarker = ko.observable(''); // current neighborhood marker
 	self.formattedAddress = ko.observable('');	// formatted neighborhood location address
 	self.topPicks = ko.observableArray('');	// most popular foursquare picks depending on neighborhood keywords and location
 	self.dailyForecasts = ko.observableArray(''); // one week daily forecasts depeding on neighborhood location
@@ -134,7 +146,6 @@ function AppViewModel() {
 	Date.prototype.getDayName = function() {
 		return days[ this.getDay() ];
 	};
-
 
 	// setup and initialize skycons canvas display
   	self.skycons = function() {
@@ -222,9 +233,11 @@ function AppViewModel() {
 	// this function gets called once neighborhood keywords or address is updated
 	function removeVenueMarkers() {
 
+		// clear current neighborhood marker
 		self.currentNeighborhoodMarker.setMap(null);
 
-		self.topPicks().forEach(function(venueItem){
+		// clear all venues' markers
+		self.topPicks().forEach(function(venueItem) {
 			venueItem.marker.setMap(null);
 			venueItem.marker = {};
 		});
@@ -242,6 +255,7 @@ function AppViewModel() {
 
 		var placeName = place.name;
 
+		// create a black star
 		var blackStar = {
 		    path: 'M 125,5 155,90 245,90 175,145 200,230 125,180 50,230 75,145 5,90 95,90 z',
 		    fillColor: 'black',
@@ -249,6 +263,7 @@ function AppViewModel() {
 		    scale: 0.2
 		};
 
+		// create a marker for this position
 		var marker = new google.maps.Marker({
 			map: map,
 			position: place.geometry.location,
@@ -256,13 +271,14 @@ function AppViewModel() {
 			icon: blackStar
 		});
 
+		// add click event to this marker
 		google.maps.event.addListener(marker, 'click', function() {
 			infowindow.setContent(placeName);
 			infowindow.open(map, marker);
 		});
 
+		// set current neighborhood marker to this marker
 		self.currentNeighborhoodMarker = marker; 
-		//console.log(self.currentNeighborhoodMarker);		
 
 	}
 
@@ -277,7 +293,6 @@ function AppViewModel() {
 		infowindow = new google.maps.InfoWindow();
 		placeLat = place.geometry.location.k;
 		placeLon = place.geometry.location.D;
-		// venueName = place.name;
 		self.formattedAddress(place.formatted_address);
 		var newNeighborhood = new google.maps.LatLng(placeLat, placeLon);
 		map.setCenter(newNeighborhood);
@@ -293,16 +308,14 @@ function AppViewModel() {
 
 		// disable marker animation when infowindow is closed
 		google.maps.event.addListener(infowindow, 'closeclick', function() {  
-    		self.selectedMarker().setAnimation(null); 
+			self.selectedMarker().setAnimation(null); 
 		});
 
 	};
 
 	/**
  	 * Get best nearby neighborhood venues data from foursquare API,
- 	 * retrieve foursquare venue photos
- 	 * create 2D array to store foursquare venue photos data
- 	 * set venue photos groups for swipebox lightbox display
+ 	 * retrieve and set foursquare venue photos in each venue object
  	 * create venues markers on map
  	 * @return {void}
  	 */
@@ -314,18 +327,19 @@ function AppViewModel() {
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
   		$.ajax({
   			url: foursquareURL, 
-  			//dataType:'jsonp',
+  			dataType:'jsonp',
   			success: function(data) {
 
   				var initialFoursquareData = data.response.groups[0].items;
+
+  				// retrieve and set foursquare venue data in topPicks observable array
   				initialFoursquareData.forEach(function(venueItem) {
   					self.topPicks.push( new Venue(venueItem, foursquareID) );
   				});
-
-  				console.log(self.topPicks());
-  				//console.log('photo albumn url: ' + self.topPicks()[0].photoAlbumnURL);
   				
-	      		self.topPicks().forEach(function(venueItem) { // add
+  				// retrieve and set foursquare venue photos 
+  				// set marker for each venue
+	      		self.topPicks().forEach(function(venueItem) { 
 	      			setPhotoAlbumns(venueItem);
 	      			createVenueMarker(venueItem);
 	      		});
@@ -344,10 +358,7 @@ function AppViewModel() {
  
 	/**
  	 * set venue photos groups for swipebox lightbox display
- 	 * create venues markers on map
- 	 * @param {Array.<Object>} venuesPhotos A Empty 2D array to keep track of venue photos data
- 	 * @param {Array.<Object>} venueIDlist An array to keep a list of all venues IDs
- 	 * @param {Array.<Object>} venueImgsURLlist A array to keep a list of all venues photo urls
+ 	 * @param {Object} venue A venue object 
  	 * @return {void}
  	 */
  	 function setPhotoAlbumns (venueItem) {
@@ -361,13 +372,14 @@ function AppViewModel() {
 
 				var imgItems = data.response.photos.items;
 
+				// set venu photo data in venue photo albumn
 				for (var i in imgItems) {
 					var venueImgURL = baseImgURL + 'width800' + imgItems[i].suffix;
 					var venueImgObj = {
 						href: venueImgURL,
-						title: venueItem.name + ' - ' + venueItem.formattedAddress
+						title: venueItem.name
 					};
-
+					// push venue photo data object to venue photo albumn
 					venueItem.photoAlbumn.push(venueImgObj);
 				}
 			}
@@ -395,10 +407,14 @@ function AppViewModel() {
 			url: forecastURL,
 			dataType: 'jsonp',
 			success: function(data) {
+
 				var initialForecastDailyData = data.daily.data;
+
+				// set fourcast data in dailyFourcasts array
 				initialForecastDailyData.forEach(function(forecastItem){
 					self.dailyForecasts.push( new Forecast(forecastItem));
 				});
+				// set current forecast data
 				self.currentlyForecast(data.currently);
 			}
 		});
@@ -412,28 +428,29 @@ function AppViewModel() {
  	 */
 	function setVenueInfowindowStr(venue) {
 
+		// set venue info window string
 		var contentString = '<div class="venue-infowindow">' 
-							+ '<div class="venue-name">'
-							+ '<a href ="' + venue.foursquareUrl + '">'
-							+ venue.name
-							+ '</a>'
-							+ '<span class="venue-rating badge">'
-							+ venue.rating
-							+ '</span>'
-							+ '</div>'
-							+ '<div class="venue-category"><span class="glyphicon glyphicon-tag"></span>'
-							+ venue.categories
-							+ '</div>'
-							+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
-							+ venue.formattedAddress
-							+ '</div>'
-							+ '<div class="venue-contact"><span class="glyphicon glyphicon-earphone"></span>'
-							+ venue.formattedPhone
-							+ '</div>'  
-							+ '<div class="venue-url"><span class="glyphicon glyphicon-globe"></span>'
-							+ venue.url
-							+ '</div>'  						    						    						
-							+ '</div>';
+		+ '<div class="venue-name">'
+		+ '<a href ="' + venue.foursquareUrl + '">'
+		+ venue.name
+		+ '</a>'
+		+ '<span class="venue-rating badge">'
+		+ venue.rating
+		+ '</span>'
+		+ '</div>'
+		+ '<div class="venue-category"><span class="glyphicon glyphicon-tag"></span>'
+		+ venue.categories
+		+ '</div>'
+		+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
+		+ venue.formattedAddress
+		+ '</div>'
+		+ '<div class="venue-contact"><span class="glyphicon glyphicon-earphone"></span>'
+		+ venue.formattedPhone
+		+ '</div>'  
+		+ '<div class="venue-url"><span class="glyphicon glyphicon-globe"></span>'
+		+ venue.url
+		+ '</div>'  						    						    						
+		+ '</div>';
 
 		return	contentString;
 
@@ -450,31 +467,41 @@ function AppViewModel() {
  	 */
 	function createVenueMarker(venue) {
 
+		// save venue info window content in a var
 		var venueInfowindowStr = setVenueInfowindowStr(venue);
 
 		var venuePosition = new google.maps.LatLng(venue.lat, venue.lon);
 
+		// create marker data
 		var venueMarker = new google.maps.Marker({
 		  	map: map,
 		  	position: venuePosition,
 		  	title: venue.name
 		});
 	    
+	    // set marker click event
 		google.maps.event.addListener(venueMarker, 'click', function() {
 	    	
+	    	// if this marker is clicked, scroll to this venue info in the venue listing window
 			document.getElementById(venue.id).scrollIntoView();
 			var clickEvent = jQuery.Event('click');
 			clickEvent.stopPropagation();
+			// trigger this venue's click event
 			$('#' + venue.id).closest(".venue-listing-item").trigger('clickEvent');
+			// set this venue id as selected venue
 			self.selectedVenue(venue.id);
+			// set info window content
 			infowindow.setContent(venueInfowindowStr);
+			// open info window if this marker is clicked
 			infowindow.open(map, venueMarker);
+			// set marker animation to bounce if this marker is clicked
 			selectedMarkerBounce(venueMarker);
+			// pan to this venue's position if this marker is clicked 
 			map.panTo(venuePosition);
 		});
 
+		// set marker info in passed venue object 
 		venue.marker = venueMarker;
-		// console.log(venue.marker);
 
 	}
 
@@ -485,12 +512,15 @@ function AppViewModel() {
  	 * @return {void}
  	 */
 	function selectedMarkerBounce(venueMarker) {
+		// if this venue marker has no animation
 		if (venueMarker.getAnimation() == null) {
+			// set this marker as selected marker
 			self.selectedMarker(venueMarker);
+			// disable other venue's animation
 			self.topPicks().forEach(function(venue) {
 				venue.marker.setAnimation(null);
 			});
-			
+			// set this marker's aniamtion to bounce
 			venueMarker.setAnimation(google.maps.Animation.BOUNCE);
 		}
 	}
@@ -501,7 +531,7 @@ function AppViewModel() {
 
 	    if (status == google.maps.places.PlacesServiceStatus.OK) {
 
-	      	getNeighborhoodVenues(results[0]);
+			getNeighborhoodVenues(results[0]);
 
 	    }
 	}
@@ -524,7 +554,7 @@ function AppViewModel() {
 		// PlacesService does the work of searching for location data.
 		service = new google.maps.places.PlacesService(map);
 		// searches the Google Maps API for location data and runs the callback 
-      	// function with the search results after each search.
+		// function with the search results after each search.
 		service.textSearch(request, getNeighborhoodCallback);
 
 	}
