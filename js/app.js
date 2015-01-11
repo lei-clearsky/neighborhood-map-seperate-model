@@ -105,13 +105,13 @@ function AppViewModel() {
 
 	var self = this;
 	var map,
-	mapOptions,
-	placeLat,
-	placeLon,
-	bounds,
-	service,
-	marker,
-	infowindow;
+		mapOptions,
+		placeLat,
+		placeLon,
+		bounds,
+		service,
+		marker,
+		infowindow;
 
 	var venueMarkers = [];
 	var defaultExploreKeyword = 'best nearby';
@@ -196,7 +196,7 @@ function AppViewModel() {
 	};
 
 	// check if user's input string is blank or contains only white-space
-	var isEmpty = function ( input ) {
+	function isEmpty(input) {
 		return (input.length === 0 || !input.trim());
 	}
 
@@ -336,24 +336,24 @@ function AppViewModel() {
   				initialFoursquareData.forEach(function(venueItem) {
   					self.topPicks.push( new Venue(venueItem, foursquareID) );
   				});
-  				
-  				// retrieve and set foursquare venue photos 
-  				// set marker for each venue
-	      		self.topPicks().forEach(function(venueItem) { 
-	      			setPhotoAlbumns(venueItem);
-	      			createVenueMarker(venueItem);
-	      		});
+				
+				// retrieve and set foursquare venue photos 
+				// set marker for each venue
+				self.topPicks().forEach(function(venueItem) { 
+					setPhotoAlbumns(venueItem);
+					createVenueMarker(venueItem);
+				});
 
-	      		// set bounds according to suggestedBounds from foursquare data resonse
-	      		var tempBounds = data.response.suggestedBounds;
-		      	if (tempBounds != undefined) {
-			        bounds = new google.maps.LatLngBounds(
-			        	new google.maps.LatLng(tempBounds.sw.lat, tempBounds.sw.lng),
-			        	new google.maps.LatLng(tempBounds.ne.lat, tempBounds.ne.lng));
-			        map.fitBounds(bounds);
-		      	}
-      		}	     		
-      	});
+				// set bounds according to suggestedBounds from foursquare data resonse
+				var tempBounds = data.response.suggestedBounds;
+				if (tempBounds != undefined) {
+					bounds = new google.maps.LatLngBounds(
+						new google.maps.LatLng(tempBounds.sw.lat, tempBounds.sw.lng),
+						new google.maps.LatLng(tempBounds.ne.lat, tempBounds.ne.lng));
+					map.fitBounds(bounds);
+				}
+			}	     		
+		});
 	}
  
 	/**
@@ -430,27 +430,27 @@ function AppViewModel() {
 
 		// set venue info window string
 		var contentString = '<div class="venue-infowindow">' 
-		+ '<div class="venue-name">'
-		+ '<a href ="' + venue.foursquareUrl + '">'
-		+ venue.name
-		+ '</a>'
-		+ '<span class="venue-rating badge">'
-		+ venue.rating
-		+ '</span>'
-		+ '</div>'
-		+ '<div class="venue-category"><span class="glyphicon glyphicon-tag"></span>'
-		+ venue.categories
-		+ '</div>'
-		+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
-		+ venue.formattedAddress
-		+ '</div>'
-		+ '<div class="venue-contact"><span class="glyphicon glyphicon-earphone"></span>'
-		+ venue.formattedPhone
-		+ '</div>'  
-		+ '<div class="venue-url"><span class="glyphicon glyphicon-globe"></span>'
-		+ venue.url
-		+ '</div>'  						    						    						
-		+ '</div>';
+							+ '<div class="venue-name">'
+							+ '<a href ="' + venue.foursquareUrl + '">'
+							+ venue.name
+							+ '</a>'
+							+ '<span class="venue-rating badge">'
+							+ venue.rating
+							+ '</span>'
+							+ '</div>'
+							+ '<div class="venue-category"><span class="glyphicon glyphicon-tag"></span>'
+							+ venue.categories
+							+ '</div>'
+							+ '<div class="venue-address"><span class="glyphicon glyphicon-home"></span>'
+							+ venue.formattedAddress
+							+ '</div>'
+							+ '<div class="venue-contact"><span class="glyphicon glyphicon-earphone"></span>'
+							+ venue.formattedPhone
+							+ '</div>'  
+							+ '<div class="venue-url"><span class="glyphicon glyphicon-globe"></span>'
+							+ venue.url
+							+ '</div>'  						    						    						
+							+ '</div>';
 
 		return	contentString;
 
@@ -529,7 +529,7 @@ function AppViewModel() {
 	// if so, get and update neighborhood venues 
 	function getNeighborhoodCallback(results, status) {
 
-	    if (status == google.maps.places.PlacesServiceStatus.OK) {
+		if (status == google.maps.places.PlacesServiceStatus.OK) {
 
 			getNeighborhoodVenues(results[0]);
 
@@ -576,12 +576,6 @@ function AppViewModel() {
 		$('#map-canvas').height($(window).height());
 	};
 
-	// initialize map
-	initializeMap();
-
-	// initialize neighborhood
-	initializeNeighborhood(defaultNeighborhood);
-
 	// the map bounds is updated when page resizes
 	window.addEventListener('resize', function(e) {
     	
@@ -590,13 +584,18 @@ function AppViewModel() {
 		$('#map-canvas').height($(window).height());
 	});
 
+	// initialize map
+	initializeMap();
+
+	// initialize neighborhood
+	initializeNeighborhood(defaultNeighborhood);
+
 };
 
 // initialize AppViewModel 
 $(function() {
 
 	ko.applyBindings(new AppViewModel());
-
 
 });
 
