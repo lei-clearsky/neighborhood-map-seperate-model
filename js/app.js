@@ -47,17 +47,17 @@ Venue.prototype = {
 	},
 
 	getFormattedPhone: function(data) {
+		if ( !data.venue.contact.formattedPhone )
+			return 'Contact Not Available';
+		else
+			return data.venue.contact.formattedPhone;
+	},
+
+	getTips: function(data) {
 		if ( !data.tips )
 			return 'Tips Not Available';
 		else
 			return data.tips[0].text;
-	},
-
-	getTips: function(data) {
-		if ( !data.venue.url )
-			return 'Website Not Available';
-		else
-			return data.venue.url;
 	},
 
 	getUrl: function(data) {
