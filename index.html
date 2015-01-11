@@ -25,103 +25,101 @@
   </head>
   <body>
     <div id="map-canvas"></div>
-      <div class="fixed-container">
-        <form class="form-inline" role="form">
-          <div class="form-group">
-            <div class="input-group">
-              <div class="input-group-addon">Find</div>
-              <input data-bind="value: exploreKeyword" type="search" name ="search" class="form-control" id="explore-venues" placeholder="Popular Places">
-            </div>             
-          </div>
-
-          <div class="form-group">
-            <div class="input-group">
-              <div class="input-group-addon">Near</div>
-              <input data-bind="value: neighborhood" type="search" name ="search" class="form-control" id="neighborhood-location" placeholder="Neighborhood">
-            </div>             
-          </div>
-
-          <button type="button" class="btn btn-default btn-md search-button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
-        </form>
-
-        <div id="nh-info" class="nh-info-box group">
-          <div class="nh-formatted-address">
-            <span data-bind="text: formattedAddress"></span>
-
-            <div class="venues-box-showhide" data-bind="click:updateVObservable()"><span data-bind="css: {'glyphicon-plus': !displayVenuesList(), 'glyphicon-minus': displayVenuesList()}" class="glyphicon"></span></div>
+    <div class="fixed-container">
+      <form class="form-inline" role="form">
+        <!-- Search top selected venues by keywords -->
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">Find</div>
+            <input data-bind="value: exploreKeyword" type="search" name ="search" class="form-control" id="explore-venues" placeholder="Popular Places">
           </div>             
-          <div class="current-temp-box">
-            <div class="left">
-              <div class="right-now">Right Now</div>
-              <div data-bind="text: currentlyForecast().temperature" class="current-temp"></div><span>&deg;</span>
-            </div>
-
-            <div class="right">
-              <div class="right-now-icon">
-                <canvas data-bind="css: currentlyForecast().icon, afterHtmlRender: skycons()" width="64" height="64"></canvas>
-              </div>
-            </div>
-            
-            <div class="current-temp-showhide" data-bind="click:updateFObservable()"><span data-bind="css: {'glyphicon-plus': !displayForecastsList(), 'glyphicon-minus': displayForecastsList()}" class="glyphicon"></span></div>
-          
-          </div>               
         </div>
+        <!-- Search top selected venues by location -->
+        <div class="form-group">
+          <div class="input-group">
+            <div class="input-group-addon">Near</div>
+            <input data-bind="value: neighborhood" type="search" name ="search" class="form-control" id="neighborhood-location" placeholder="Neighborhood">
+          </div>             
+        </div>
+        <!-- Search button -->
+        <button type="button" class="btn btn-default btn-md search-button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+      </form>
+      <!-- Overview information window -->
+      <div id="nh-info" class="nh-info-box group">
+        <div class="nh-formatted-address">
+          <span data-bind="text: formattedAddress"></span>
+          <div class="venues-box-showhide" data-bind="click:updateVObservable()"><span data-bind="css: {'glyphicon-plus': !displayVenuesList(), 'glyphicon-minus': displayVenuesList()}" class="glyphicon"></span></div>
+        </div>             
+        <div class="current-temp-box">
+          <div class="left">
+            <div class="right-now">Right Now</div>
+            <div data-bind="text: currentlyForecast().temperature" class="current-temp"></div><span>&deg;</span>
+          </div>
 
-        <div data-bind="visible: displayForecastsList" id="forecast-listing" class="forecast-listing-box" style="display:none">
-          <!-- ko foreach: dailyForecasts() -->
-          <div class="forecast-listing-item group">
-            <div class="left">
-              <div data-bind="text: formattedTime" class="day-name"></div>    
-            </div>
-            <div class="middle">
-              <div class="day-icon">
-                <canvas data-bind="css: icon, afterHtmlRender:$parent.skycons()" width="64" height="64"></canvas>
-              </div>
-            </div>
-            <div class="right">
-              <div class="day-temp-range">
-                <span data-bind="text: temperatureMin"></span><span>&deg;</span> - <span data-bind="text: temperatureMax"></span><span>&deg;</span></div>
-              <div data-bind="text: summary" class="day-info"></div>
+          <div class="right">
+            <div class="right-now-icon">
+              <canvas data-bind="css: currentlyForecast().icon, afterHtmlRender: skycons()" width="64" height="64"></canvas>
             </div>
           </div>
-          <!-- /ko -->
-        </div>
-
-        <div data-bind="visible: displayVenuesList" id="venues-listing" class="venues-listing-box" style="display:none"> 
-          <!-- ko foreach: topPicks() -->
-          <div data-bind="css:{'selected-venue-item': id === $root.selectedVenue()}, click: $root.panToMarker" class="venue-listing-item group">
-            <div class="left">
-              <div data-bind="text: name" class="venue-name"></div>
-              <div class="venue-sub group">
-                <div class="venue-rating"><span data-bind="text: rating" class="badge"></span></div>
-                <div data-bind="text: formattedAddress" class="venue-address"></div>
-              </div>
-              <div class="venue-category">
-                <div class="glyphicon glyphicon-tag"></div>
-                <div data-bind="text: categories" class="content"></div>
-              </div>
-              <div class="venue-contact">
-                <div class="glyphicon glyphicon-earphone"></div>
-                <div data-bind="text: formattedPhone" class="content"></div>
-              </div>
-              <div class="venue-website">
-                <div class="glyphicon glyphicon-globe"></div>
-                <div data-bind="text: url" class="content"></div>
-              </div>
-              <div class="venue-review">
-                <div class="glyphicon glyphicon-user"></div>
-                <div data-bind="text: tips" class="content"></div>
-              </div>
+          
+          <div class="current-temp-showhide" data-bind="click:updateFObservable()"><span data-bind="css: {'glyphicon-plus': !displayForecastsList(), 'glyphicon-minus': displayForecastsList()}" class="glyphicon"></span></div>
+        
+        </div>               
+      </div>
+      <!-- Daily fourcasts info -->
+      <div data-bind="visible: displayForecastsList" id="forecast-listing" class="forecast-listing-box" style="display:none">
+        <!-- ko foreach: dailyForecasts() -->
+        <div class="forecast-listing-item group">
+          <div class="left">
+            <div data-bind="text: formattedTime" class="day-name"></div>    
+          </div>
+          <div class="middle">
+            <div class="day-icon">
+              <canvas data-bind="css: icon, afterHtmlRender:$parent.skycons()" width="64" height="64"></canvas>
             </div>
-            <div class="right">
-              <img data-bind="attr: {src: featuredPhoto, id: id}" class="featured-photo"/>
-            </div>
-          </div>  
-          <!-- /ko -->         
-
+          </div>
+          <div class="right">
+            <div class="day-temp-range">
+              <span data-bind="text: temperatureMin"></span><span>&deg;</span> - <span data-bind="text: temperatureMax"></span><span>&deg;</span></div>
+            <div data-bind="text: summary" class="day-info"></div>
+          </div>
         </div>
-
+        <!-- /ko -->
       </div>
 
+      <!-- Top pick venues info -->
+      <div data-bind="visible: displayVenuesList" id="venues-listing" class="venues-listing-box" style="display:none"> 
+        <!-- ko foreach: topPicks() -->
+        <div data-bind="css:{'selected-venue-item': id === $root.selectedVenue()}, click: $root.panToMarker" class="venue-listing-item group">
+          <div class="left">
+            <div data-bind="text: name" class="venue-name"></div>
+            <div class="venue-sub group">
+              <div class="venue-rating"><span data-bind="text: rating" class="badge"></span></div>
+              <div data-bind="text: formattedAddress" class="venue-address"></div>
+            </div>
+            <div class="venue-category">
+              <div class="glyphicon glyphicon-tag"></div>
+              <div data-bind="text: categories" class="content"></div>
+            </div>
+            <div class="venue-contact">
+              <div class="glyphicon glyphicon-earphone"></div>
+              <div data-bind="text: formattedPhone" class="content"></div>
+            </div>
+            <div class="venue-website">
+              <div class="glyphicon glyphicon-globe"></div>
+              <div data-bind="text: url" class="content"></div>
+            </div>
+            <div class="venue-review">
+              <div class="glyphicon glyphicon-user"></div>
+              <div data-bind="text: tips" class="content"></div>
+            </div>
+          </div>
+          <div class="right">
+            <img data-bind="attr: {src: featuredPhoto, id: id}" class="featured-photo"/>
+          </div>
+        </div>  
+        <!-- /ko -->         
+      </div>
+    </div>
   </body>
 </html>
