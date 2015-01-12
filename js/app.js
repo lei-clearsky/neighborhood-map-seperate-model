@@ -8,7 +8,6 @@
  * The Venue model that initialize and store venue data
  */
 var Venue = function(data, foursquareID) {
-	var that = this;
 	// data that is always defined or need no formatting
 	this.id = data.venue.id;
 	this.name = data.venue.name;
@@ -149,6 +148,7 @@ function AppViewModel() {
 
 	// setup and initialize skycons canvas display
   	self.skycons = function() {
+  		
   		var icons = new Skycons(),
           	list  = ["clear-day", "clear-night", "partly-cloudy-day", "partly-cloudy-night", "cloudy", "rain", "sleet", "snow", "wind", "fog"];
 		
@@ -186,6 +186,7 @@ function AppViewModel() {
 	// takes user's input in neighborhood address
 	// update displays for map, weather forecasts and popular venues
 	self.computedNeighborhood = function() {
+
 		if (!isEmpty(self.neighborhood())) {
 			removeVenueMarkers();
 			self.topPicks([]);
@@ -290,6 +291,7 @@ function AppViewModel() {
  	 * @return {void}
  	 */
 	function getNeighborhoodVenues(place) {
+
 		infowindow = new google.maps.InfoWindow();
 		placeLat = place.geometry.location.k;
 		placeLon = place.geometry.location.D;
@@ -320,6 +322,7 @@ function AppViewModel() {
  	 * @return {void}
  	 */
  	function getFoursquareData() {
+
 		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
   		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + placeLat + ',' + placeLon;
@@ -566,6 +569,7 @@ function AppViewModel() {
 
 	// function that initializes the application map
 	function initializeMap() {
+
 		mapOptions = {
 			zoom: 15,
 			disableDefaultUI: true
