@@ -42,9 +42,7 @@ var Venue = function(data, foursquareID) {
 Venue.prototype = {
 
 	getPhotoAlbumnURL: function(data, foursquareID) {
-		return this.basePhotoAlbumnURL + '/photos?' + foursquareID + '&v=20130815';
-
-		//return this.basePhotoAlbumnURL + this.id + '/photos?' + foursquareID + '&v=20130815';
+		return this.basePhotoAlbumnURL + this.id + '/photos?' + foursquareID + '&v=20130815';
 	},
 
 	getFormattedPhone: function(data) {
