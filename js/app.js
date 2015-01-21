@@ -328,9 +328,9 @@ function AppViewModel() {
   		var neighborhoodLL = '&ll=' + placeLat + ',' + placeLon;
   		var query = '&query=' + self.exploreKeyword();
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
+
   		$.ajax({
   			url: foursquareURL, 
-  			dataType:'jsonp',
   			success: function(data) {
 
   				var initialFoursquareData = data.response.groups[0].items;
@@ -355,7 +355,15 @@ function AppViewModel() {
 						new google.maps.LatLng(tempBounds.ne.lat, tempBounds.ne.lng));
 					map.fitBounds(bounds);
 				}
-			}	     		
+			},
+			// error handling
+      		error: function( data ) {
+      			var responseTextJSON = JSON.parse(data.responseText);
+      			$('#foursquare-API-error').html('<h2>There are errors when retrieving venue data. Please try refresh page later.</h2>' 
+      											+ '<p>Status: ' + data.statusText + '</p>'
+      											+ '<p>Error Type: ' + responseTextJSON.meta.errorType + '</p>'
+      											+ '<p>Error Detail: ' + responseTextJSON.meta.errorDetail + '</p>');
+      		}	     		
 		});
 	}
  
@@ -385,7 +393,16 @@ function AppViewModel() {
 					// push venue photo data object to venue photo albumn
 					venueItem.photoAlbumn.push(venueImgObj);
 				}
-			}
+			},
+			// error handling
+      		error: function( data ) {
+      			console.log(data);
+      			var responseTextJSON = JSON.parse(data.responseText);
+      			$('#foursquare-API-error').html('<h2>There are errors when retrieving venue photo albumns. Please try refresh page later.</h2>' 
+      											+ '<p>Status: ' + data.statusText + '</p>'
+      											+ '<p>Error Type: ' + responseTextJSON.meta.errorType + '</p>'
+      											+ '<p>Error Detail: ' + responseTextJSON.meta.errorDetail + '</p>');
+      		}
 		});
 
   		var venueAlbumnID = '#' + venueItem.id;
@@ -419,7 +436,14 @@ function AppViewModel() {
 				});
 				// set current forecast data
 				self.currentlyForecast(data.currently);
-			}
+			},
+			// error handling
+      		error: function( data ) {
+      			$('.current-temp-box').html('<p>Error retrieving forecast data! Try refresh page later.</p>');
+      			$('#forecast-API-error').html('<h2>There are errors when retrieving forecast data. Please try refresh page later.</h2>' 
+      											+ '<p>Status: ' + data.status + '</p>'
+      											+ '<p>Error Type: ' + data.statusText + '</p>');
+      		}
 		});
 	}
 

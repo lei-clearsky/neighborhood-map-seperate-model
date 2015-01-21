@@ -68,6 +68,7 @@
       </div>
       <!-- Daily fourcasts info -->
       <div data-bind="visible: displayForecastsList" id="forecast-listing" class="forecast-listing-box" style="display:none">
+        <div id="forecast-API-error"></div>
         <!-- ko foreach: dailyForecasts() -->
         <div class="forecast-listing-item group">
           <div class="left">
@@ -89,6 +90,7 @@
 
       <!-- Top pick venues info -->
       <div data-bind="visible: displayVenuesList" id="venues-listing" class="venues-listing-box" style="display:none"> 
+        <div id="foursquare-API-error"></div>
         <!-- ko foreach: topPicks() -->
         <div data-bind="css:{'selected-venue-item': id === $root.selectedVenue()}, click: $root.panToMarker" class="venue-listing-item group">
           <div class="left">
