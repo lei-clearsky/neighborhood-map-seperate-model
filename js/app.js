@@ -42,7 +42,9 @@ var Venue = function(data, foursquareID) {
 Venue.prototype = {
 
 	getPhotoAlbumnURL: function(data, foursquareID) {
-		return this.basePhotoAlbumnURL + this.id + '/photos?' + foursquareID + '&v=20130815';
+		return this.basePhotoAlbumnURL + '/photos?' + foursquareID + '&v=20130815';
+
+		//return this.basePhotoAlbumnURL + this.id + '/photos?' + foursquareID + '&v=20130815';
 	},
 
 	getFormattedPhone: function(data) {
@@ -378,7 +380,6 @@ function AppViewModel() {
 
 		$.ajax({
 			url: venueItem.photoAlbumnURL,
-			dataType: 'jsonp',
 			success: function(data) {
 
 				var imgItems = data.response.photos.items;
