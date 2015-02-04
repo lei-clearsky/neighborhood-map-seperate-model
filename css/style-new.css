@@ -272,16 +272,23 @@
   clear: both;
 }
 
+#googleMap-API-error,
 #foursquare-API-error,
 #forecast-API-error{
   padding: 0 10px;
   background: #F0ad4e;
   font-weight: 300;
 }
+#googleMap-API-error h2,
 #foursquare-API-error h2,
 #forecast-API-error h2{
   font-weight: 300;
   margin-top:0;
+}
+#googleMap-API-error{
+  position:fixed;
+  z-index:1000;
+  width:100%;
 }
 
 /* Custom, iPhone Retina 

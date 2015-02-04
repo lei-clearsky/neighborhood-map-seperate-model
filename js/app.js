@@ -555,6 +555,11 @@ function AppViewModel() {
 	// if so, get and update neighborhood venues 
 	function getNeighborhoodCallback(results, status) {
 
+		if (status != google.maps.places.PlacesServiceStatus.OK) {
+    		alert(status);
+    		return;
+  		}
+
 		if (status == google.maps.places.PlacesServiceStatus.OK) {
 
 			getNeighborhoodVenues(results[0]);
