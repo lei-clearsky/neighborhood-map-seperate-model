@@ -324,13 +324,14 @@ function AppViewModel() {
  	function getFoursquareData() {
 
 		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
-  		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
+  		var foursquareID = '';//'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + placeLat + ',' + placeLon;
   		var query = '&query=' + self.exploreKeyword();
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
 
   		$.ajax({
   			url: foursquareURL, 
+  			//dataType: 'jsonp',
   			success: function(data) {
 
   				var initialFoursquareData = data.response.groups[0].items;
@@ -378,6 +379,7 @@ function AppViewModel() {
 
 		$.ajax({
 			url: venueItem.photoAlbumnURL,
+			dataType: 'jsonp',
 			success: function(data) {
 
 				var imgItems = data.response.photos.items;
@@ -556,7 +558,8 @@ function AppViewModel() {
 	function getNeighborhoodCallback(results, status) {
 
 		if (status != google.maps.places.PlacesServiceStatus.OK) {
-    		alert(status);
+    		//alert(status);
+    		$('#googleMap-API-error').html('<h2>There are errors when retrieving map data. Please try refresh page later.</h2>'); 
     		return;
   		}
 
