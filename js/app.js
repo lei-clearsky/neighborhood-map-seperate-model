@@ -324,7 +324,7 @@ function AppViewModel() {
  	function getFoursquareData() {
 
 		var foursquareBaseURL = 'https://api.foursquare.com/v2/venues/explore?';
-  		var foursquareID = '';//'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
+  		var foursquareID = 'client_id=T3VKC34CMHTDB5YPR3TRA044A51EHCMPBJII433EB1TXWH1A&client_secret=XTWLWF52NASGLCULU0MF1YV1300CC0IDLW4DQXV2I3ROVDOC';
   		var neighborhoodLL = '&ll=' + placeLat + ',' + placeLon;
   		var query = '&query=' + self.exploreKeyword();
   		var foursquareURL = foursquareBaseURL + foursquareID + '&v=20130815&venuePhotos=1' + neighborhoodLL + query;
