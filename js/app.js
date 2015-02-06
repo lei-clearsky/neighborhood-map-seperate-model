@@ -331,7 +331,8 @@ function AppViewModel() {
 
   		$.ajax({
   			url: foursquareURL, 
-  			//dataType: 'jsonp',
+  			//timeout: 15000,
+			//cache: false,
   			success: function(data) {
 
   				var initialFoursquareData = data.response.groups[0].items;
@@ -357,13 +358,19 @@ function AppViewModel() {
 					map.fitBounds(bounds);
 				}
 			},
-			// error handling
+			complete: function() {
+				if(self.topPicks().length === 0)
+				 	$('#foursquare-API-error').html('<h2>No result available.</h2><h2>Please change your keywords.</h2>');
+			},
       		error: function( data ) {
-      			var responseTextJSON = JSON.parse(data.responseText);
-      			$('#foursquare-API-error').html('<h2>There are errors when retrieving venue data. Please try refresh page later.</h2>' 
-      											+ '<p>Status: ' + data.statusText + '</p>'
-      											+ '<p>Error Type: ' + responseTextJSON.meta.errorType + '</p>'
-      											+ '<p>Error Detail: ' + responseTextJSON.meta.errorDetail + '</p>');
+      			$('#foursquare-API-error').html('<h2>There are errors when retrieving venue data. Please try refresh page later.</h2>');
+
+      			// var responseTextJSON = JSON.parse(data.responseText);
+      			// $('#foursquare-API-error').html(data);
+      			// $('#foursquare-API-error').html('<h2>There are errors when retrieving venue data. Please try refresh page later.</h2>' 
+      			// 								+ '<p>Status: ' + data.statusText + '</p>'
+      			// 								+ '<p>Error Type: ' + responseTextJSON.meta.errorType + '</p>'
+      			// 								+ '<p>Error Detail: ' + responseTextJSON.meta.errorDetail + '</p>');
       		}	     		
 		});
 	}
@@ -397,12 +404,7 @@ function AppViewModel() {
 			},
 			// error handling
       		error: function( data ) {
-      			console.log(data);
-      			var responseTextJSON = JSON.parse(data.responseText);
-      			$('#foursquare-API-error').html('<h2>There are errors when retrieving venue photo albumns. Please try refresh page later.</h2>' 
-      											+ '<p>Status: ' + data.statusText + '</p>'
-      											+ '<p>Error Type: ' + responseTextJSON.meta.errorType + '</p>'
-      											+ '<p>Error Detail: ' + responseTextJSON.meta.errorDetail + '</p>');
+      			$('#foursquare-API-error').html('<h2>There are errors when retrieving venue photo albumns. Please try refresh page later.</h2>');
       		}
 		});
 
@@ -557,9 +559,9 @@ function AppViewModel() {
 	// if so, get and update neighborhood venues 
 	function getNeighborhoodCallback(results, status) {
 
+
 		if (status != google.maps.places.PlacesServiceStatus.OK) {
-    		//alert(status);
-    		$('#googleMap-API-error').html('<h2>There are errors when retrieving map data. Please try refresh page later.</h2>'); 
+    		$('#googleMap-API-error').html('<h2>There are errors when retrieving map data.</h2><h2>Please try refresh page later.</h2>'); 
     		return;
   		}
 
@@ -606,9 +608,15 @@ function AppViewModel() {
 			disableDefaultUI: true
 		};
 
+		if (typeof google == 'undefined') {
+        	$('#googleMap-API-error').html('<h2>There are errors when retrieving map data.</h2><h2>Please try refresh page later.</h2>'); 
+    		return;
+    	}
+
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 		
 		$('#map-canvas').height($(window).height());
+
 	};
 
 	// the map bounds is updated when page resizes

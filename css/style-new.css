@@ -288,7 +288,11 @@
 #googleMap-API-error{
   position:fixed;
   z-index:1000;
-  width:100%;
+  top: 10%;
+  width: 100%;
+}
+#googleMap-API-error h2{
+  text-align:center;
 }
 
 /* Custom, iPhone Retina 
