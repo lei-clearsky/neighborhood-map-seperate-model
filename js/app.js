@@ -364,13 +364,6 @@ function AppViewModel() {
 			},
       		error: function( data ) {
       			$('#foursquare-API-error').html('<h2>There are errors when retrieving venue data. Please try refresh page later.</h2>');
-
-      			// var responseTextJSON = JSON.parse(data.responseText);
-      			// $('#foursquare-API-error').html(data);
-      			// $('#foursquare-API-error').html('<h2>There are errors when retrieving venue data. Please try refresh page later.</h2>' 
-      			// 								+ '<p>Status: ' + data.statusText + '</p>'
-      			// 								+ '<p>Error Type: ' + responseTextJSON.meta.errorType + '</p>'
-      			// 								+ '<p>Error Detail: ' + responseTextJSON.meta.errorDetail + '</p>');
       		}	     		
 		});
 	}
