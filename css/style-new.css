@@ -5,13 +5,7 @@
     font-family: 'Lato', Calibri, Arial, sans-serif;
 }
 /* inlined partial css to index.html */
-.fixed-container{
-  width:520px;
-  position:absolute;
-  z-index:100;
-  top:5px;
-  padding:0 5px;
-}
+
 .forecast-listing-box,
 .venues-listing-box{
   overflow-x: hidden;
