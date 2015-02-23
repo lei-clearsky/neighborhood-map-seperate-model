@@ -217,8 +217,8 @@
 */ 
 /* Small Devices, Tablets */
 @media only screen and (max-width : 768px) {
-
-  .fixed-container{
+/* moved to inline css in index.html */
+/*  .fixed-container{
     width:100%;
   }
 
@@ -247,7 +247,7 @@
 
   .nh-info-box .current-temp-box .left .current-temp{
     font-size:20px;
-  }
+  }*/
 
   .forecast-listing-box, .venues-listing-box{
     width:100%;
@@ -269,9 +269,9 @@
 }
 
 @media only screen and (max-width : 320px) {
-  .fixed-container{
+/*  .fixed-container{
     width:100%;
-  }
+  }*/
   .venues-listing-box{
     max-width: 310px;
   }
