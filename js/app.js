@@ -293,8 +293,8 @@ function AppViewModel() {
 	function getNeighborhoodVenues(place) {
 
 		infowindow = new google.maps.InfoWindow();
-		placeLat = place.geometry.location.k;
-		placeLon = place.geometry.location.D;
+		placeLat = place.geometry.location.lat();
+		placeLon = place.geometry.location.lng();
 		self.formattedAddress(place.formatted_address);
 		var newNeighborhood = new google.maps.LatLng(placeLat, placeLon);
 		map.setCenter(newNeighborhood);
